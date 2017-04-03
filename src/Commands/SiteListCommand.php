@@ -17,7 +17,8 @@ class SiteListCommand extends Command
     protected function configure()
     {
         $this->setName('site:list')
-            ->setAliases(['sites']);
+            ->setAliases(['sites'])
+            ->setDescription('Lists all sites in a group');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

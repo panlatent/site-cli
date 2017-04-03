@@ -13,6 +13,7 @@ class ConfigCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('config');
+        $this->setName('config')
+            ->setDescription('Setting your .site-cli.yml');
     }
 }

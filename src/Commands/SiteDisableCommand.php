@@ -21,6 +21,7 @@ class SiteDisableCommand extends Command
     {
         $this->setName('site:disable')
             ->setAliases(['disable'])
+            ->setDescription('Disable a site in a group')
             ->addArgument('site', InputArgument::REQUIRED, 'Disable a site: group/site');
     }
 

@@ -17,7 +17,8 @@ class GroupListCommand extends Command
     protected function configure()
     {
         $this->setName('group:list')
-            ->setAliases(['groups']);
+            ->setAliases(['groups'])
+            ->setDescription('Lists all site groups');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

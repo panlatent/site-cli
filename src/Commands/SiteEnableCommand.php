@@ -21,6 +21,7 @@ class SiteEnableCommand extends Command
     {
         $this->setName('site:enable')
             ->setAliases(['enable'])
+            ->setDescription('Enable a site in a group')
             ->addArgument('site', InputArgument::REQUIRED, 'Enable a site: group/site');
     }
 
