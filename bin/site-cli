@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+/**
+ * SiteCLI - Help you manage Nginx local development configuration
+ *
+ * @author  panlatent@gmail.com
+ * @link    https://github.com/panlatent/site-cli
+ * @license https://opensource.org/licenses/MIT
+ */
+
+use Panlatent\SiteCli\Commands\ConfigCommand;
+use Panlatent\SiteCli\Commands\SiteDisableCommand;
+use Panlatent\SiteCli\Commands\SiteEnableCommand;
+use Panlatent\SiteCli\Commands\GroupListCommand;
+use Panlatent\SiteCli\Commands\SiteListCommand;
+use Symfony\Component\Console\Application;
+
+require(__DIR__ . '/../vendor/autoload.php');
+
+$app = new Application('site-cli', '0.1.0');
+
+$app->add(new ConfigCommand());
+$app->add(new GroupListCommand());
+$app->add(new SiteListCommand());
+$app->add(new SiteEnableCommand());
+$app->add(new SiteDisableCommand());
+
+$app->run();

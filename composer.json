@@ -15,6 +15,7 @@
     "panlatent/boost": "dev-master",
     "symfony/console": "~3.0",
     "symfony/finder": "~3.0",
+    "symfony/filesystem": "~3.0",
     "symfony/yaml": "~3.0"
   },
   "require-dev": {
@@ -29,5 +30,8 @@
     "psr-4": {
       "Tests\\": "tests/"
     }
-  }
+  },
+  "bin": [
+    "bin/site-cli"
+  ]
 }
