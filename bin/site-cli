@@ -17,7 +17,15 @@ use Panlatent\SiteCli\Commands\GroupListCommand;
 use Panlatent\SiteCli\Commands\SiteListCommand;
 use Symfony\Component\Console\Application;
 
-require(__DIR__ . '/../vendor/autoload.php');
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require(__DIR__ . '/../vendor/autoload.php');
+} elseif (file_exists(__DIR__ . '/../autoload.php')) {
+    require(__DIR__ . '/../autoload.php');
+} else {
+    die('Not found autoload.php');
+}
+
+
 
 $app = new Application('site-cli', '0.1.0');
 
