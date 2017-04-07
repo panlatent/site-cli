@@ -25,7 +25,9 @@ class GroupListCommand extends Command
     {
         parent::execute($input, $output);
         $manager = $this->manager();
-        foreach ($manager->getGroups() as $group) {
+        $groups = $manager->getGroups();
+        sort($groups);
+        foreach ($groups as $group) {
             $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";
             $output->writeln(sprintf(" - %s : (%d site : %s)", $group->getName(), $group->count(), $enable));
         }

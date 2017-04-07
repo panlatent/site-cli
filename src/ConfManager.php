@@ -82,10 +82,16 @@ class ConfManager
     protected function parser()
     {
         $finder = new Finder();
-        $finder->directories()->depth(0)->in($this->available);
+        $finder->directories()->depth(0)->in($this->available); // Find group
         foreach ($finder as $directory) {
             $name = $directory->getFilename();
             $this->groups[$name] = new SiteGroup($this, $name, $directory->getPathname());
+        }
+
+        $finder = new Finder();
+        $finder->files()->depth(0)->in($this->available); // Find unknown group
+        if ($finder->count()) {
+            $this->groups[':default'] = new SiteGroup($this, ':default', $this->available);
         }
     }
 }

@@ -29,13 +29,22 @@ class SiteDisableCommand extends Command
     {
         parent::execute($input, $output);
         $manager = $this->manager();
-        if ( ! preg_match('#^.+/.+$#', $input->getArgument('site'))) {
-            throw new Exception("Unknown site argument syntax, should give \"group/site\"");
+        if (false === strpos($input->getArgument('site'), '/')) { // Default group
+            if (false === ($group = $manager->getGroup(':default'))) {
+                throw new NotFoundException("Not found default group");
+            }
+            $groupName = 'default';
+            $siteName = $input->getArgument('site');
+        } else {
+            if ( ! preg_match('#^.+/.+$#', $input->getArgument('site'))) {
+                throw new Exception("Unknown site argument syntax, should give \"group/site\"");
+            }
+            list($groupName, $siteName) = explode('/', $input->getArgument('site'), 2);
+            if (false === ($group = $manager->getGroup($groupName))) {
+                throw new NotFoundException("Not found site group \"$groupName\"");
+            }
         }
-        list($groupName, $siteName) = explode('/',$input->getArgument('site'), 2);
-        if (false === ($group = $manager->getGroup($groupName))) {
-            throw new NotFoundException("Not found site group \"$groupName\"");
-        }
+
         if (false === ($site = $group->getSite($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }

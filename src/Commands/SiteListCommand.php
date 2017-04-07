@@ -25,7 +25,9 @@ class SiteListCommand extends Command
     {
         parent::execute($input, $output);
         $manager = $this->manager();
-        foreach ($manager->getSites() as $site) {
+        $sites = $manager->getSites();
+        sort($sites);
+        foreach ($sites as $site) {
             $status = $site->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
             $output->writeln(sprintf(" - %s / %s  %s", $site->getGroup()->getName(), $site->getName(), $status));
         }
