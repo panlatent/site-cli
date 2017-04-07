@@ -30,7 +30,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 
 
-$app = new Application('site-cli', '0.1.0');
+$app = new Application('site-cli', '1.0.0');
 
 $app->add(new ConfigCommand());
 $app->add(new GroupListCommand());
