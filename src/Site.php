@@ -9,6 +9,7 @@
 
 namespace Panlatent\SiteCli;
 
+use Panlatent\SiteCli\Support\NginxConfParser;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Site
@@ -41,9 +42,19 @@ class Site
         return $this->group;
     }
 
+    public function count()
+    {
+        return count($this->servers);
+    }
+
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getServers()
+    {
+        return $this->servers;
     }
 
     public function isEnable()
@@ -82,6 +93,18 @@ class Site
 
     protected function parser()
     {
-
+        $content = file_get_contents($this->path);
+        $parser = new NginxConfParser($content);
+        foreach ($parser as $key => $value) {
+            if ($key == 'server') {
+                if ( ! is_numeric(implode('', array_keys($value)))) {
+                    $this->servers[] = new SiteServer($this, $value);
+                } else {
+                    foreach ($value as $server) {
+                        $this->servers[] = new SiteServer($this, $server);
+                    }
+                }
+            }
+        }
     }
 }

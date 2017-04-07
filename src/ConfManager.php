@@ -58,9 +58,19 @@ class ConfManager
         return $sites;
     }
 
+    /**
+     * @return \Panlatent\SiteCli\SiteServer[]
+     */
     public function getServers()
     {
+        $servers = [];
+        foreach ($this->groups as $group) {
+            foreach ($group->getSites() as $site) {
+                $servers = array_merge($servers, $site->getServers());
+            }
+        }
 
+        return $servers;
     }
 
     /**

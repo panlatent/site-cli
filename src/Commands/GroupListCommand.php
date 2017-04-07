@@ -29,7 +29,7 @@ class GroupListCommand extends Command
         sort($groups);
         foreach ($groups as $group) {
             $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";
-            $output->writeln(sprintf(" - %s : (%d site : %s)", $group->getName(), $group->count(), $enable));
+            $output->writeln(sprintf(" - <info>%s</info>: %d site, %s", $group->getName(), $group->count(), $enable));
         }
     }
 }

@@ -29,7 +29,14 @@ class SiteListCommand extends Command
         sort($sites);
         foreach ($sites as $site) {
             $status = $site->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
-            $output->writeln(sprintf(" - %s / %s  %s", $site->getGroup()->getName(), $site->getName(), $status));
+            $name = $site->isEnable() ? '<info>%s/%s</info>' : '<comment>%s/%s</comment>';
+            $count = $site->count();
+            $output->writeln(sprintf(" - %s $name [%d]",
+                $status,
+                $site->getGroup()->getName(),
+                $site->getName(),
+                $count
+                ));
         }
     }
 }
