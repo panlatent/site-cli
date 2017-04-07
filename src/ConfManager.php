@@ -89,6 +89,20 @@ class ConfManager
         return $this->enabled;
     }
 
+    public function getLostSymbolicLinkEnables()
+    {
+        $enables = [];
+        $finder = new Finder();
+        $finder->files()->depth(0)->in($this->enabled);
+        foreach ($finder as $file) {
+            if ($file->isLink() && ! is_file($file->getLinkTarget())) {
+                $enables[] = $file->getPathname();
+            }
+        }
+
+        return $enables;
+    }
+
     protected function parser()
     {
         $finder = new Finder();

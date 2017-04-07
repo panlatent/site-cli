@@ -35,5 +35,11 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
     {
         $this->config = new CliConfig();
         $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
+
+        foreach ($this->manager->getLostSymbolicLinkEnables() as $enable) {
+            $output->writeln('');
+            $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
+            $output->writeln('');
+        }
     }
 }
