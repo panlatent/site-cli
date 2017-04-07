@@ -26,7 +26,6 @@ class GroupDisableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        parent::execute($input, $output);
         $manager = $this->manager();
         $groupName = $input->getArgument('group');
         if (false === ($group = $manager->getGroup($groupName))) {
