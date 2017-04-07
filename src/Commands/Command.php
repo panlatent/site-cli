@@ -21,6 +21,11 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
      */
     protected $config;
 
+    /**
+     * @var ConfManager
+     */
+    protected $manager;
+
     public function __construct($name = null)
     {
         parent::__construct($name);
@@ -29,10 +34,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->config = new CliConfig();
-    }
-
-    protected function manager()
-    {
-        return new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
+        $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
     }
 }

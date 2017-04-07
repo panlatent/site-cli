@@ -24,8 +24,7 @@ class GroupListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = $this->manager();
-        $groups = $manager->getGroups();
+        $groups = $this->manager->getGroups();
         sort($groups);
         foreach ($groups as $group) {
             $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";

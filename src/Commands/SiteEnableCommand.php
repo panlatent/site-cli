@@ -28,9 +28,8 @@ class SiteEnableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = $this->manager();
         if (false === strpos($input->getArgument('site'), '/')) { // Default group
-            if (false === ($group = $manager->getGroup(':default'))) {
+            if (false === ($group = $this->manager->getGroup(':default'))) {
                 throw new NotFoundException("Not found default group");
             }
             $groupName = 'default';
@@ -40,7 +39,7 @@ class SiteEnableCommand extends Command
                 throw new Exception("Unknown site argument syntax, should give \"group/site\"");
             }
             list($groupName, $siteName) = explode('/', $input->getArgument('site'), 2);
-            if (false === ($group = $manager->getGroup($groupName))) {
+            if (false === ($group = $this->manager->getGroup($groupName))) {
                 throw new NotFoundException("Not found site group \"$groupName\"");
             }
         }

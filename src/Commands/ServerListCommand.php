@@ -24,8 +24,7 @@ class ServerListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = $this->manager();
-        $servers = $manager->getServers();
+        $servers = $this->manager->getServers();
         sort($servers);
         foreach ($servers as $server) {
             $status = $server->getSite()->isEnable() ? '<info>√</info>' : '<comment>x</comment>';

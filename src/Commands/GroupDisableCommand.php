@@ -26,9 +26,8 @@ class GroupDisableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = $this->manager();
         $groupName = $input->getArgument('group');
-        if (false === ($group = $manager->getGroup($groupName))) {
+        if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 

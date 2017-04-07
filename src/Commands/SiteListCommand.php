@@ -24,8 +24,7 @@ class SiteListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        $manager = $this->manager();
-        $sites = $manager->getSites();
+        $sites = $this->manager->getSites();
         sort($sites);
         foreach ($sites as $site) {
             $status = $site->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
