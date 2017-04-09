@@ -25,9 +25,15 @@ class NginxConfParser extends Storage
         parent::__construct();
         $this->isWithInclude = $withInclude;
         $this->storage = $this->parser($content);
+        $this->clip();
         if ($withInclude) {
             $this->searchInclude();
         }
+    }
+
+    public function all()
+    {
+        return $this->storage;
     }
 
     public function isWithInclude()
@@ -102,6 +108,13 @@ class NginxConfParser extends Storage
         }
 
         return $current;
+    }
+
+    protected function clip()
+    {
+        array_walk_recursive($this->storage, function(&$value) {
+            $value = trim(preg_replace('#^\s*"(.*)"\s*$#', '\1', $value), " \t");
+        });
     }
 
     protected function searchInclude()
