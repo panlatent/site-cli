@@ -9,11 +9,11 @@
  */
 
 use Panlatent\SiteCli\Commands\ConfigCommand;
-use Panlatent\SiteCli\Commands\ServerListCommand;
+use Panlatent\SiteCli\Commands\ListServerCommand;
 use Panlatent\SiteCli\Commands\SiteDisableCommand;
 use Panlatent\SiteCli\Commands\SiteEnableCommand;
-use Panlatent\SiteCli\Commands\GroupListCommand;
-use Panlatent\SiteCli\Commands\SiteListCommand;
+use Panlatent\SiteCli\Commands\ListGroupCommand;
+use Panlatent\SiteCli\Commands\ListSiteCommand;
 use Symfony\Component\Console\Application;
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
@@ -31,10 +31,10 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 $app = new Application('site-cli', '1.0.0');
 
 $app->add(new ConfigCommand());
-$app->add(new GroupListCommand());
-$app->add(new SiteListCommand());
+$app->add(new ListGroupCommand());
+$app->add(new ListSiteCommand());
 $app->add(new SiteEnableCommand());
 $app->add(new SiteDisableCommand());
-$app->add(new ServerListCommand());
+$app->add(new ListServerCommand());
 
 $app->run();

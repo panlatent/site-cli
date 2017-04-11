@@ -12,11 +12,11 @@ namespace Panlatent\SiteCli\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ServerListCommand extends Command
+class ListServerCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('server:list')
+        $this->setName('list:server')
             ->setAliases(['servers'])
             ->setDescription('Lists all server');
     }

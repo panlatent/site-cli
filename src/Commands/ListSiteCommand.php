@@ -12,11 +12,11 @@ namespace Panlatent\SiteCli\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SiteListCommand extends Command
+class ListSiteCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('site:list')
+        $this->setName('list:site')
             ->setAliases(['sites'])
             ->setDescription('Lists all sites in a group');
     }
