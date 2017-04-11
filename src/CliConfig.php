@@ -28,9 +28,6 @@ class CliConfig extends Storage
         $this->home = getenv('HOME') . DIRECTORY_SEPARATOR;
         $this->user = getenv('USER'). DIRECTORY_SEPARATOR;
         $this->cwd = getcwd(). DIRECTORY_SEPARATOR;
-
-        $this->loadConfigure();
-        $this->requiredHandler();
     }
 
     /**
@@ -57,7 +54,12 @@ class CliConfig extends Storage
         return $this->cwd;
     }
 
-    protected function loadConfigure()
+    public function getDefaultConfigure()
+    {
+        return __DIR__ . '/../.site-cli.yml';
+    }
+
+    public function loadConfigure()
     {
         $finder = new Finder();
         $finder->files()->ignoreDotFiles(false)->name('.site-cli.yml')->depth(0)->in([
@@ -70,6 +72,8 @@ class CliConfig extends Storage
         foreach ($finder as $file) {
             $this->storage = array_merge($this->storage, Yaml::parse($file->getContents()));
         }
+
+        $this->requiredHandler();
     }
 
     protected function requiredHandler()
