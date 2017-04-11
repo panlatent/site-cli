@@ -10,8 +10,8 @@
 
 use Panlatent\SiteCli\Commands\ConfigCommand;
 use Panlatent\SiteCli\Commands\ListServerCommand;
-use Panlatent\SiteCli\Commands\SiteDisableCommand;
-use Panlatent\SiteCli\Commands\SiteEnableCommand;
+use Panlatent\SiteCli\Commands\DisableCommand;
+use Panlatent\SiteCli\Commands\EnableCommand;
 use Panlatent\SiteCli\Commands\ListGroupCommand;
 use Panlatent\SiteCli\Commands\ListSiteCommand;
 use Symfony\Component\Console\Application;
@@ -33,8 +33,8 @@ $app = new Application('site-cli', '1.0.0');
 $app->add(new ConfigCommand());
 $app->add(new ListGroupCommand());
 $app->add(new ListSiteCommand());
-$app->add(new SiteEnableCommand());
-$app->add(new SiteDisableCommand());
+$app->add(new EnableCommand());
+$app->add(new DisableCommand());
 $app->add(new ListServerCommand());
 
 $app->run();

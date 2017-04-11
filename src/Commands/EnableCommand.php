@@ -9,22 +9,28 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\NotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SiteDisableCommand extends Command
+class EnableCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('disable')
-            ->setDescription('Disable a site or a group sites')
+        $this->setName('enable')
+            ->setDescription('Enable a site or a group sites')
             ->addArgument(
                 'target',
                 InputArgument::REQUIRED,
                 'A group name or a site name, using group/site style'
+            )
+            ->addOption(
+                'force',
+                'f',
+                InputOption::VALUE_NONE,
+                'Force create a symbolic link, whether it exists or not'
             );
     }
 
@@ -32,13 +38,13 @@ class SiteDisableCommand extends Command
     {
         parent::execute($input, $output);
         if (preg_match('#^.+/.+$#', $input->getArgument('target'))) {
-            $this->disableSite($input, $output);
+            $this->enableSite($input, $output);
         } else {
-            $this->disableGroup($input, $output);
+            $this->enableGroup($input, $output);
         }
     }
 
-    protected function disableSite(InputInterface $input, OutputInterface $output)
+    protected function enableSite(InputInterface $input, OutputInterface $output)
     {
         list($groupName, $siteName) = explode('/', $input->getArgument('target'), 2);
         if (false === ($group = $this->manager->getGroup($groupName))) {
@@ -48,16 +54,16 @@ class SiteDisableCommand extends Command
         if (false === ($site = $group->getSite($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
-        if ( ! $site->isEnable()) {
-            $output->writeln("<comment>$groupName / $siteName is disabled, no need to repeat!</comment>");
+        if ($site->isEnable() && ! $input->getOption('force')) {
+            $output->writeln("<comment>$groupName / $siteName is enabled, no need to repeat!</comment>");
             return;
         }
 
-        $site->disable();
-        $output->writeln("<info>$groupName / $siteName disable success!</info>");
+        $site->enable();
+        $output->writeln("<info>$groupName / $siteName enable success!</info>");
     }
 
-    protected function disableGroup(InputInterface $input, OutputInterface $output)
+    protected function enableGroup(InputInterface $input, OutputInterface $output)
     {
         $groupName = $input->getArgument('target');
         if (false === ($group = $this->manager->getGroup($groupName))) {
@@ -66,12 +72,12 @@ class SiteDisableCommand extends Command
 
         $output->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
         foreach ($group->getSites() as $site) {
-            if ( ! $site->isEnable()) {
-                $output->writeln("<comment>x $groupName / {$site->getName()} is disabled, skip!</comment>");
+            if ($site->isEnable() && ! $input->getOption('force')) {
+                $output->writeln("<comment>x $groupName / {$site->getName()} is enabled, skip!</comment>");
                 continue;
             }
 
-            $site->disable();
+            $site->enable();
             $output->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
         }
     }
