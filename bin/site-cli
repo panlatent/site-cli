@@ -9,7 +9,6 @@
  */
 
 use Panlatent\SiteCli\Commands\ConfigCommand;
-use Panlatent\SiteCli\Commands\GroupDisableCommand;
 use Panlatent\SiteCli\Commands\ServerListCommand;
 use Panlatent\SiteCli\Commands\SiteDisableCommand;
 use Panlatent\SiteCli\Commands\SiteEnableCommand;
@@ -33,7 +32,6 @@ $app = new Application('site-cli', '1.0.0');
 
 $app->add(new ConfigCommand());
 $app->add(new GroupListCommand());
-$app->add(new GroupDisableCommand());
 $app->add(new SiteListCommand());
 $app->add(new SiteEnableCommand());
 $app->add(new SiteDisableCommand());

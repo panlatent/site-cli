@@ -19,29 +19,30 @@ class SiteDisableCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('site:disable')
-            ->setAliases(['disable'])
-            ->setDescription('Disable a site in a group')
-            ->addArgument('site', InputArgument::REQUIRED, 'Disable a site: group/site');
+        $this->setName('disable')
+            ->setDescription('Disable a site or a group sites')
+            ->addArgument(
+                'target',
+                InputArgument::REQUIRED,
+                'A group name or a site name, using group/site style'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        if (false === strpos($input->getArgument('site'), '/')) { // Default group
-            if (false === ($group = $this->manager->getGroup(':default'))) {
-                throw new NotFoundException("Not found default group");
-            }
-            $groupName = 'default';
-            $siteName = $input->getArgument('site');
+        if (preg_match('#^.+/.+$#', $input->getArgument('target'))) {
+            $this->disableSite($input, $output);
         } else {
-            if ( ! preg_match('#^.+/.+$#', $input->getArgument('site'))) {
-                throw new Exception("Unknown site argument syntax, should give \"group/site\"");
-            }
-            list($groupName, $siteName) = explode('/', $input->getArgument('site'), 2);
-            if (false === ($group = $this->manager->getGroup($groupName))) {
-                throw new NotFoundException("Not found site group \"$groupName\"");
-            }
+            $this->disableGroup($input, $output);
+        }
+    }
+
+    protected function disableSite(InputInterface $input, OutputInterface $output)
+    {
+        list($groupName, $siteName) = explode('/', $input->getArgument('target'), 2);
+        if (false === ($group = $this->manager->getGroup($groupName))) {
+            throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
         if (false === ($site = $group->getSite($siteName))) {
@@ -54,5 +55,24 @@ class SiteDisableCommand extends Command
 
         $site->disable();
         $output->writeln("<info>$groupName / $siteName disable success!</info>");
+    }
+
+    protected function disableGroup(InputInterface $input, OutputInterface $output)
+    {
+        $groupName = $input->getArgument('target');
+        if (false === ($group = $this->manager->getGroup($groupName))) {
+            throw new NotFoundException("Not found site group \"$groupName\"");
+        }
+
+        $output->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
+        foreach ($group->getSites() as $site) {
+            if ( ! $site->isEnable()) {
+                $output->writeln("<comment>x $groupName / {$site->getName()} is disabled, skip!</comment>");
+                continue;
+            }
+
+            $site->disable();
+            $output->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
+        }
     }
 }
