@@ -67,16 +67,24 @@ Usage
 $ site-cli [command] [argment]
 ```
 
+    Usage:
+      command [options] [arguments]
+    
+    Options:
+      -h, --help            Display this help message
+      -q, --quiet           Do not output any message
+      -V, --version         Display this application version
+          --ansi            Force ANSI output
+          --no-ansi         Disable ANSI output
+      -n, --no-interaction  Do not ask any interactive question
+      -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+    
     Available commands:
-      config       Setting your .site-cli.yml
-      disable      Disable a site or a group sites
-      enable       Enable a site or a group sites
-      help         Displays help for a command
-      list         Lists commands
-     list
-      list:group   [groups] Lists all site groups
-      list:server  [servers] Lists all server
-      list:site    [sites] Lists all sites in a group
+      config   Setting your .site-cli.yml
+      disable  Disable a site or a group sites
+      enable   Enable a site or a group sites
+      help     Displays help for a command
+      list     Lists sites or groups or servers
 
 License
 -------
