@@ -25,9 +25,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     die('Not found autoload.php');
 }
 
-
-
-$app = new Application('site-cli', '1.0.0');
+$app = new Application('site-cli', '1.1.0');
 $default = new DefaultCommand();
 
 $app->add($default);
