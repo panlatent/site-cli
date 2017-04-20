@@ -1,37 +1,37 @@
 {
-  "name": "panlatent/site-cli",
-  "description": "Help you manage Nginx local development configuration",
-  "type": "project",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "panlatent",
-      "email": "panlatent@gmail.com"
-    }
-  ],
-  "minimum-stability": "stable",
-  "require": {
-    "php": ">=5.5",
-    "panlatent/boost": "~0.2",
-    "symfony/console": "~3.0",
-    "symfony/finder": "~3.0",
-    "symfony/filesystem": "~3.0",
-    "symfony/yaml": "~3.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "~4.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Panlatent\\SiteCli\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "bin": [
-    "bin/site-cli"
-  ]
+    "name": "panlatent/site-cli",
+    "description": "Help you manage Nginx local development configuration",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "panlatent",
+            "email": "panlatent@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.5",
+        "panlatent/boost": "~0.2",
+        "symfony/console": "~3.0",
+        "symfony/finder": "~3.0",
+        "symfony/filesystem": "~3.0",
+        "symfony/yaml": "~3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Panlatent\\SiteCli\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/site-cli"
+    ]
 }

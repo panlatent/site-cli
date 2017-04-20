@@ -8,7 +8,10 @@ Site CLI
 
 Help you manage Nginx local development configuration
 
-Site CLI 是一个帮助你管理和切换 Nginx 本地开发环境配置文件的命令行工具。
+What's This
+------------
+CLI is a command-line tool that helps you manage and switch Nginx local development 
+environment configuration files.
 
 Features
 --------
@@ -21,17 +24,15 @@ Features
 Install
 -------
 
-1. Download the project
+Download the library using composer:
+```bash
+composer require panlatent/site-cli
+```
 
-+ Composer
-  ```bash
-  composer require panlatent/site-cli
-  ```
-+ Phar
+[Download](https://github.com/panlatent/site-cli/releases) the library using phar.
   
-  [Download](https://github.com/panlatent/site-cli/releases)
 
-2. Create Nginx conf directory
+1. Create Nginx conf directory
 
 ```bash
 mkdir ~/etc/nginx/
@@ -41,7 +42,7 @@ mkdir ~/etc/nginx/sites-enabled
 
 Include `~/etc/nginx/sites-enabled` in your `nginx.conf`
 
-3. Configure .site-cli.yml to your home directory.
+2. Configure .site-cli.yml to your home directory.
 
 ```yaml
 site:
@@ -49,7 +50,7 @@ site:
   enabled: ~/etc/nginx/sites-enabled
 ```
 
-4. Optional
+3. Optional
 ```bash
 ln -s site-cli-path /usr/local/bin/site-cli # Alias site
 chmod +x /usr/local/bin/site-cli
