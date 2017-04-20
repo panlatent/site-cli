@@ -10,20 +10,21 @@ Help you manage Nginx local development configuration
 
 What's This
 ------------
-CLI is a command-line tool that helps you manage and switch Nginx local development 
+Site CLI is a command-line tool that helps you manage and switch Nginx local development 
 environment configuration files.
+
+Site CLI makes me lazy in the development, because I don't want to use `cd` or `ln -s` or more
+, but I enjoy it.
 
 Features
 --------
-
-+ Site Grouping
-+ List Site Information
-+ Quick Switching Group/Site/Server
-+ Quick Build From Template
++ Site grouping
++ List site information
++ Quick switching group/site/server
++ Quick build configuration file from template
 
 Install
 -------
-
 Download the library using composer:
 ```bash
 composer require panlatent/site-cli
@@ -63,31 +64,17 @@ chmod +x /usr/local/bin/site-cli
 
 Usage
 -----
-
 ```bash
 $ site-cli [command] [argment]
 ```
 
-    Usage:
-      command [options] [arguments]
-    
-    Options:
-      -h, --help            Display this help message
-      -q, --quiet           Do not output any message
-      -V, --version         Display this application version
-          --ansi            Force ANSI output
-          --no-ansi         Disable ANSI output
-      -n, --no-interaction  Do not ask any interactive question
-      -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
-    
-    Available commands:
-      config   Setting your .site-cli.yml
-      disable  Disable a site or a group sites
-      enable   Enable a site or a group sites
-      help     Displays help for a command
-      list     Lists sites or groups or servers
+Command:
++ **config**   Setting your .site-cli.yml
++ **disable**  Disable a site or a group sites
++ **enable**   Enable a site or a group sites
++ **help**     Displays help for a command
++ **list**     Lists sites or groups or servers
 
 License
 -------
-
 The Site CLI is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
