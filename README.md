@@ -6,7 +6,7 @@ Site CLI
 [![Latest Unstable Version](https://poser.pugx.org/panlatent/site-cli/v/unstable.svg)](https://packagist.org/packages/panlatent/site-cli) 
 [![License](https://poser.pugx.org/panlatent/site-cli/license.svg)](https://packagist.org/packages/panlatent/site-cli)
 
-Help you manage Nginx local development configuration
+A command-line tool that help you manage Nginx local development configuration
 
 What's This
 ------------

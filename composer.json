@@ -1,6 +1,6 @@
 {
     "name": "panlatent/site-cli",
-    "description": "Help you manage Nginx local development configuration",
+    "description": "A command-line tool that help you manage Nginx local development configuration",
     "type": "project",
     "license": "MIT",
     "authors": [
