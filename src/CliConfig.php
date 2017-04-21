@@ -15,6 +15,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class CliConfig extends Storage
 {
+    protected $paths = [
+        '/etc/nginx',
+        '/usr/local/etc/nginx',
+        '~/etc/nginx',
+    ];
+
     protected $home;
 
     protected $user;
@@ -76,17 +82,36 @@ class CliConfig extends Storage
         $this->requiredHandler();
     }
 
+    public function locate()
+    {
+        $probables = [];
+        foreach ($this->paths as $path) {
+            $path = $this->amendPath($path);
+            if (is_dir($path)) {
+                $probables[] = $path;
+            }
+        }
+
+        return $probables;
+    }
+
     protected function requiredHandler()
     {
         if (empty($this->storage['site']['available'])) {
             throw new Exception('Not found site.available setting in .site-cli.yml');
         }
         $this->storage['site']['available'] = $this->amendPath($this->storage['site']['available']);
+        if ( ! is_dir($this->storage['site']['available'])) {
+            throw new Exception('Site-available directory does not exist');
+        }
 
         if (empty($this->storage['site']['enabled'])) {
             throw new Exception('Not found site.enabled setting in .site-cli.yml');
         }
         $this->storage['site']['enabled'] = $this->amendPath($this->storage['site']['enabled']);
+        if ( ! is_dir($this->storage['site']['enabled'])) {
+            throw new Exception('Site-enabled directory does not exist');
+        }
     }
 
     protected function amendPath($path)
