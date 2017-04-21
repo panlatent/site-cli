@@ -22,28 +22,18 @@ Features
 + List site information
 + Quick switching group/site/server
 + Quick build configuration file from template
++ Test website 
 
-Install
--------
+Installation
+-------------
 Download the library using composer:
 ```bash
-composer require panlatent/site-cli
+$ composer require panlatent/site-cli
 ```
 
 [Download](https://github.com/panlatent/site-cli/releases) the library using phar.
   
-
-1. Create Nginx conf directory
-
-```bash
-mkdir ~/etc/nginx/
-mkdir ~/etc/nginx/sites-available
-mkdir ~/etc/nginx/sites-enabled
-```
-
-Include `~/etc/nginx/sites-enabled` in your `nginx.conf`
-
-2. Configure .site-cli.yml to your home directory.
+Usually, you need create a .site-cli.yml file to your home directory. Edit this file:
 
 ```yaml
 site:
@@ -51,14 +41,18 @@ site:
   enabled: ~/etc/nginx/sites-enabled
 ```
 
-3. Optional
+Now, Site CLI will automatically help you to create this file, you only need to run any command. For example:
 ```bash
-ln -s site-cli-path /usr/local/bin/site-cli # Alias site
+$ site-cli config
+```
+### Optional
+```bash
+ln -s site-cli-path /usr/local/bin/site-cli
 chmod +x /usr/local/bin/site-cli
 ```
 Or
 ```bash
-mv site-cli.phar /usr/local/bin/site-cli # Alias site
+mv site-cli.phar /usr/local/bin/site-cli
 chmod +x /usr/local/bin/site-cli
 ```
 
