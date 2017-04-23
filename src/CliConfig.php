@@ -68,10 +68,11 @@ class CliConfig extends Storage
     public function loadConfigure()
     {
         $finder = new Finder();
-        $finder->files()->ignoreDotFiles(false)->name('.site-cli.yml')->depth(0)->in([
-            $this->home,
-            $this->cwd,
-        ]);
+        $paths = [$this->home];
+        if (realpath($this->cwd) != realpath(__DIR__ . '/../')) {
+            $paths[] = $this->cwd;
+        }
+        $finder->files()->ignoreDotFiles(false)->name('.site-cli.yml')->depth(0)->in($paths);
         if ( ! count($finder)) {
             throw new NotFoundException('Not found .site-cli.yml from user home or current path');
         }
