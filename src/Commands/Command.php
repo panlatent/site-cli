@@ -31,6 +31,8 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
      */
     protected $manager;
 
+    protected $checkLostSymbolicLink = true;
+
     public function __construct($name = null)
     {
         parent::__construct($name);
@@ -95,9 +97,18 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         }
 
         $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
-        foreach ($this->manager->getLostSymbolicLinkEnables() as $enable) {
-            $output->writeln('');
-            $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
+        if ($this->checkLostSymbolicLink) {
+            $this->checkLostSymbolicLink($output);
+        }
+    }
+
+    protected function checkLostSymbolicLink(OutputInterface $output)
+    {
+        if ($lostSymbolicLinkEnables = $this->manager->getLostSymbolicLinkEnables()) {
+            foreach ($lostSymbolicLinkEnables as $enable) {
+                $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
+            }
+            $output->writeln('<comment>Note:</comment> Run <info>disable</info> <comment>--clear-lost</comment> will remove them');
             $output->writeln('');
         }
     }

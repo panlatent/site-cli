@@ -9,10 +9,10 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\NotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DisableCommand extends Command
@@ -23,14 +23,36 @@ class DisableCommand extends Command
             ->setDescription('Disable a site or a group sites')
             ->addArgument(
                 'target',
-                InputArgument::REQUIRED,
+                InputArgument::OPTIONAL,
                 'A group name or a site name, using group/site style'
+            )->addOption(
+                'clear-lost',
+                null,
+                InputOption::VALUE_NONE,
+                'Clear lost symbolic links'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->checkLostSymbolicLink = false;
         parent::execute($input, $output);
+
+        if ($input->getOption('clear-lost')) {
+            foreach ($this->manager->getLostSymbolicLinkEnables() as $enable) {
+                if (unlink($enable)) {
+                    $output->writeln(sprintf("<comment>Success: Clean symbolic link lost file \"%s\"</comment>",
+                        $enable));
+                } else {
+                    $output->writeln(sprintf("<error>Warning: remove symbolic link file \"%s\" fail!</error>",
+                        $enable));
+                }
+            }
+            if (empty($input->getArgument('target'))) {
+                return;
+            }
+        }
+
         if (preg_match('#^.+/.+$#', $input->getArgument('target'))) {
             $this->disableSite($input, $output);
         } else {
