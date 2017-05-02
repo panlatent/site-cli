@@ -15,6 +15,10 @@ use Panlatent\SiteCli\Commands\EnableCommand;
 use Panlatent\SiteCli\Commands\ListCommand;
 use Symfony\Component\Console\Application;
 
+if (version_compare(PHP_VERSION, '5.5', '<')) {
+    die("Site CLI need php version not lower than 5.5\n");
+}
+
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require(__DIR__ . '/../vendor/autoload.php');
 } elseif (file_exists(__DIR__ . '/../autoload.php')) {
