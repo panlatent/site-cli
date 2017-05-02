@@ -24,12 +24,12 @@ class EnableCommand extends Command
             ->addArgument(
                 'group',
                 InputArgument::REQUIRED,
-                'A group name'
+                'Group name'
             )
             ->addArgument(
                 'site',
                 InputArgument::OPTIONAL,
-                'a site name in the group'
+                'Site name in the group'
             )
             ->addOption(
                 'force',
