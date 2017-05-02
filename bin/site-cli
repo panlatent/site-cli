@@ -8,6 +8,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
+use Panlatent\SiteCli\Commands\CompletionCommand;
 use Panlatent\SiteCli\Commands\ConfigCommand;
 use Panlatent\SiteCli\Commands\DefaultCommand;
 use Panlatent\SiteCli\Commands\DisableCommand;
@@ -33,6 +34,7 @@ $app = new Application('site-cli', '1.1.0');
 $default = new DefaultCommand();
 
 $app->add($default);
+$app->add(new CompletionCommand());
 $app->add(new ConfigCommand());
 $app->add(new ListCommand());
 $app->add(new EnableCommand());

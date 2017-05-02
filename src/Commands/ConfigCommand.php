@@ -17,7 +17,7 @@ class ConfigCommand extends Command
     protected function configure()
     {
         $this->setName('config')
-            ->setDescription('Setting your .site-cli.yml');
+            ->setDescription('Setting your .site-cli.yml and edit site');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

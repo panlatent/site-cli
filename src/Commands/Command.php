@@ -42,21 +42,25 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $io = new SymfonyStyle($input, $output);
             $this->config = new CliConfig();
             $this->config->loadConfigure();
         } catch (NotFoundException $e) {
-            $io = new SymfonyStyle($input, $output);
             $io->writeln([
                 '',
                 "<error>{$e->getMessage()}</error>"
             ]);
-            if ( ! $io->confirm('Create a .site.yml file to your home?', true)) {
+            if ( ! $io->confirm('Create a .site-cli.yml file to your home?', true)) {
                 throw $e;
             }
 
             if ( ! $this->createConfigureYmlFile($io)) {
                 return;
             }
+        }
+
+        if ( ! is_file($this->config->getHome() . '.site-cli.sh')) {
+            $this->createConfigureShellFile();
         }
 
         $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
@@ -96,6 +100,16 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         }
 
         return true;
+    }
+
+    private function createConfigureShellFile()
+    {
+        $program = $_SERVER['argv'][0];
+        exec($program .  ' _completion --generate-hook', $output);
+        $completion = implode("\n", $output);
+        $content = file_get_contents(__DIR__ . '/../../.site-cli.sh');
+        $content = str_replace('{% complete %}', $completion, $content);
+        file_put_contents($this->config->getHome() . '.site-cli.sh', $content);
     }
 
     private function checkLostSymbolicLink(OutputInterface $output)
