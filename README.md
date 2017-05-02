@@ -46,9 +46,9 @@ Now, Site CLI will automatically help you to create this file, you only need to 
 $ site-cli config
 ```
 
-Add shell complete in `~/.zshrc` or `~/.bash_profile`:
+Run `site-cli config dump-complete` and add shell complete in `~/.zshrc` or `~/.bash_profile`:
 ```bash
-source ./.site-cli.sh
+source ~/.site-cli.sh
 ```
 
 ### Optional
