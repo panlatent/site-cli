@@ -65,7 +65,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         }
     }
 
-    protected function createConfigureYmlFile(SymfonyStyle $io)
+    private function createConfigureYmlFile(SymfonyStyle $io)
     {
         $config = Yaml::parse(file_get_contents($this->config->getDefaultConfigure()));
         $filename = $this->config->getHome() . '.site-cli.yml';
@@ -98,7 +98,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         return true;
     }
 
-    protected function checkLostSymbolicLink(OutputInterface $output)
+    private function checkLostSymbolicLink(OutputInterface $output)
     {
         if ($lostSymbolicLinkEnables = $this->manager->getLostSymbolicLinkEnables()) {
             foreach ($lostSymbolicLinkEnables as $enable) {
