@@ -22,10 +22,16 @@ class DisableCommand extends Command
         $this->setName('disable')
             ->setDescription('Disable a site or a group sites')
             ->addArgument(
-                'target',
+                'group',
+                InputArgument::REQUIRED,
+                'A group name'
+            )
+            ->addArgument(
+                'site',
                 InputArgument::OPTIONAL,
-                'A group name or a site name, using group/site style'
-            )->addOption(
+                'a site name in the group'
+            )
+            ->addOption(
                 'clear-lost',
                 null,
                 InputOption::VALUE_NONE,
@@ -53,16 +59,17 @@ class DisableCommand extends Command
             }
         }
 
-        if (preg_match('#^.+/.+$#', $input->getArgument('target'))) {
-            $this->disableSite($input, $output);
-        } else {
+        if (empty($input->getArgument('site'))) {
             $this->disableGroup($input, $output);
+        } else {
+            $this->disableSite($input, $output);
         }
     }
 
     protected function disableSite(InputInterface $input, OutputInterface $output)
     {
-        list($groupName, $siteName) = explode('/', $input->getArgument('target'), 2);
+        $groupName = $input->getArgument('group');
+        $siteName = $input->getArgument('site');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
@@ -81,7 +88,7 @@ class DisableCommand extends Command
 
     protected function disableGroup(InputInterface $input, OutputInterface $output)
     {
-        $groupName = $input->getArgument('target');
+        $groupName = $groupName = $input->getArgument('group');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }

@@ -14,7 +14,7 @@ use Panlatent\SiteCli\Commands\DefaultCommand;
 use Panlatent\SiteCli\Commands\DisableCommand;
 use Panlatent\SiteCli\Commands\EnableCommand;
 use Panlatent\SiteCli\Commands\ListCommand;
-use Symfony\Component\Console\Application;
+use Panlatent\SiteCli\Application;
 
 if (version_compare(PHP_VERSION, '5.5', '<')) {
     die("Site CLI need php version not lower than 5.5\n");
@@ -30,7 +30,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     die('Not found autoload.php');
 }
 
-$app = new Application('site-cli', '1.1.0');
+$app = new Application();
 $default = new DefaultCommand();
 
 $app->add($default);

@@ -22,9 +22,14 @@ class EnableCommand extends Command
         $this->setName('enable')
             ->setDescription('Enable a site or a group sites')
             ->addArgument(
-                'target',
+                'group',
                 InputArgument::REQUIRED,
-                'A group name or a site name, using group/site style'
+                'A group name'
+            )
+            ->addArgument(
+                'site',
+                InputArgument::OPTIONAL,
+                'a site name in the group'
             )
             ->addOption(
                 'force',
@@ -37,16 +42,17 @@ class EnableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
-        if (preg_match('#^.+/.+$#', $input->getArgument('target'))) {
-            $this->enableSite($input, $output);
-        } else {
+        if (empty($input->getArgument('site'))) {
             $this->enableGroup($input, $output);
+        } else {
+            $this->enableSite($input, $output);
         }
     }
 
     protected function enableSite(InputInterface $input, OutputInterface $output)
     {
-        list($groupName, $siteName) = explode('/', $input->getArgument('target'), 2);
+        $groupName = $input->getArgument('group');
+        $siteName = $input->getArgument('site');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
@@ -65,7 +71,7 @@ class EnableCommand extends Command
 
     protected function enableGroup(InputInterface $input, OutputInterface $output)
     {
-        $groupName = $input->getArgument('target');
+        $groupName = $groupName = $input->getArgument('group');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }

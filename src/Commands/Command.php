@@ -59,10 +59,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
             }
         }
 
-        if ( ! is_file($this->config->getHome() . '.site-cli.sh')) {
-            $this->createConfigureShellFile();
-        }
-
         $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
         if ($this->checkLostSymbolicLink) {
             $this->checkLostSymbolicLink($output);
@@ -100,16 +96,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         }
 
         return true;
-    }
-
-    private function createConfigureShellFile()
-    {
-        $program = $_SERVER['argv'][0];
-        exec($program .  ' _completion --generate-hook', $output);
-        $completion = implode("\n", $output);
-        $content = file_get_contents(__DIR__ . '/../../.site-cli.sh');
-        $content = str_replace('{% complete %}', $completion, $content);
-        file_put_contents($this->config->getHome() . '.site-cli.sh', $content);
     }
 
     private function checkLostSymbolicLink(OutputInterface $output)
