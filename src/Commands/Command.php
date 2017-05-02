@@ -13,6 +13,7 @@ use Panlatent\SiteCli\CliConfig;
 use Panlatent\SiteCli\ConfManager;
 use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\NotFoundException;
+use Panlatent\SiteCli\Support\Vim;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -53,45 +54,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
                 throw $e;
             }
 
-            $config = Yaml::parse(file_get_contents($this->config->getDefaultConfigure()));
-            $filename = $this->config->getHome() . '.site-cli.yml';
-
-            $location = $this->config->locate();
-            $path = $io->choice('Which of the following is your nginx configure path:', array_merge(
-                [0 => 'skip'],
-                $location
-            ), 'skip');
-            if ($path !== 'skip') {
-                $config['site']['available'] = $path . 'sites-available';
-                $config['site']['enabled'] = $path . 'sites-enabled';
-            }
-
-            $descriptors = [
-                ['file', '/dev/tty', 'r'],
-                ['file', '/dev/tty', 'w'],
-                ['file', '/dev/tty', 'w'],
-            ];
-
-            file_put_contents($filename, Yaml::dump($config));
-            $process = proc_open('vim ' . $filename, $descriptors, $pipes);
-            if (is_resource($process)) {
-                while (true) {
-                    if (proc_get_status($process)['running'] == false) {
-                        break;
-                    }
-                    usleep(100);
-                }
-            }
-
-            try {
-                $this->config->loadConfigure();
-            } catch (ParseException $e) {
-                $output->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
-                unlink($filename);
-                return;
-            } catch (Exception $e) {
-                $output->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
-                unlink($filename);
+            if ( ! $this->createConfigureYmlFile($io)) {
                 return;
             }
         }
@@ -100,6 +63,39 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         if ($this->checkLostSymbolicLink) {
             $this->checkLostSymbolicLink($output);
         }
+    }
+
+    protected function createConfigureYmlFile(SymfonyStyle $io)
+    {
+        $config = Yaml::parse(file_get_contents($this->config->getDefaultConfigure()));
+        $filename = $this->config->getHome() . '.site-cli.yml';
+
+        $location = $this->config->locate();
+        $path = $io->choice('Which of the following is your nginx configure path:', array_merge(
+            [0 => 'skip'],
+            $location
+        ), 'skip');
+        if ($path !== 'skip') {
+            $config['site']['available'] = $path . 'sites-available';
+            $config['site']['enabled'] = $path . 'sites-enabled';
+        }
+
+        file_put_contents($filename, Yaml::dump($config));
+        Vim::open($filename);
+
+        try {
+            $this->config->loadConfigure();
+        } catch (ParseException $e) {
+            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
+            unlink($filename);
+            return false;
+        } catch (Exception $e) {
+            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
+            unlink($filename);
+            return false;
+        }
+
+        return true;
     }
 
     protected function checkLostSymbolicLink(OutputInterface $output)
