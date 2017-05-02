@@ -115,7 +115,7 @@ class ConfManager
         $finder = new Finder();
         $finder->files()->depth(0)->in($this->available); // Find unknown group
         if ($finder->count()) {
-            $this->groups[':default'] = new SiteGroup($this, ':default', $this->available);
+            $this->groups['@default'] = new SiteGroup($this, '@default', $this->available);
         }
     }
 }
