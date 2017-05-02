@@ -22,12 +22,8 @@ if (version_compare(PHP_VERSION, '5.5', '<')) {
 
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require(__DIR__ . '/../vendor/autoload.php');
-} elseif (file_exists(__DIR__ . '/../autoload.php')) {
-    require(__DIR__ . '/../autoload.php');
-} elseif (file_exists(__DIR__ . '/../../../autoload.php')) {
-    require(__DIR__ . '/../../../autoload.php');
 } else {
-    die('Not found autoload.php');
+    die('Not found composer autoload.php');
 }
 
 $app = new Application();
