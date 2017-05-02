@@ -11,14 +11,11 @@ namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\CliConfig;
 use Panlatent\SiteCli\ConfManager;
-use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\NotFoundException;
-use Panlatent\SiteCli\Support\Vim;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 abstract class Command extends \Symfony\Component\Console\Command\Command
 {
@@ -54,48 +51,20 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
                 throw $e;
             }
 
-            if ( ! $this->createConfigureYmlFile($io)) {
-                return;
-            }
+            $command = $this->getApplication()->find('config');
+            $arguments = array(
+                'command' => 'config',
+                'target'    => 'init',
+            );
+            $greetInput = new ArrayInput($arguments);
+            $command->run($greetInput, $output);
+            $this->config->loadConfigure();
         }
 
         $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
         if ($this->checkLostSymbolicLink) {
             $this->checkLostSymbolicLink($output);
         }
-    }
-
-    private function createConfigureYmlFile(SymfonyStyle $io)
-    {
-        $config = Yaml::parse(file_get_contents($this->config->getDefaultConfigure()));
-        $filename = $this->config->getHome() . '.site-cli.yml';
-
-        $location = $this->config->locate();
-        $path = $io->choice('Which of the following is your nginx configure path:', array_merge(
-            [0 => 'skip'],
-            $location
-        ), 'skip');
-        if ($path !== 'skip') {
-            $config['site']['available'] = $path . 'sites-available';
-            $config['site']['enabled'] = $path . 'sites-enabled';
-        }
-
-        file_put_contents($filename, Yaml::dump($config));
-        Vim::open($filename);
-
-        try {
-            $this->config->loadConfigure();
-        } catch (ParseException $e) {
-            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
-            unlink($filename);
-            return false;
-        } catch (Exception $e) {
-            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
-            unlink($filename);
-            return false;
-        }
-
-        return true;
     }
 
     private function checkLostSymbolicLink(OutputInterface $output)

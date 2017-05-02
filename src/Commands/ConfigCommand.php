@@ -9,9 +9,15 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Panlatent\SiteCli\CliConfig;
+use Panlatent\SiteCli\Exception;
+use Panlatent\SiteCli\Support\Vim;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 class ConfigCommand extends Command
 {
@@ -24,12 +30,50 @@ class ConfigCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
         switch ($input->getArgument('target')) {
+            case 'init':
+                $this->config = new CliConfig();
+                return $this->createConfigureYmlFile(new SymfonyStyle($input, $output));
             case 'dump-complete':
-                $this->createDumpCompleteFile();
-                break;
+                parent::execute($input, $output);
+                return $this->createDumpCompleteFile();
+            default:
+                $output->writeln('<error>Not found config target</error>');
+                return false;
         }
+    }
+
+    private function createConfigureYmlFile(SymfonyStyle $io)
+    {
+        $config = Yaml::parse(file_get_contents($this->config->getDefaultConfigure()));
+        $filename = $this->config->getHome() . '.site-cli.yml';
+
+        $location = $this->config->locate();
+        $path = $io->choice('Which of the following is your nginx configure path:', array_merge(
+            [0 => 'skip'],
+            $location
+        ), 'skip');
+        if ($path !== 'skip') {
+            $config['site']['available'] = $path . 'sites-available';
+            $config['site']['enabled'] = $path . 'sites-enabled';
+        }
+
+        file_put_contents($filename, Yaml::dump($config));
+        Vim::open($filename);
+
+        try {
+            $this->config->loadConfigure();
+        } catch (ParseException $e) {
+            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
+            unlink($filename);
+            return false;
+        } catch (Exception $e) {
+            $io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
+            unlink($filename);
+            return false;
+        }
+
+        return true;
     }
 
     private function createDumpCompleteFile()

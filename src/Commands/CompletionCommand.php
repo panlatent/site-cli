@@ -36,12 +36,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->config = new CliConfig();
-        $this->config->loadConfigure();
-        $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
-        parent::execute($input, $output);
-
-//        $this->handler
+         parent::execute($input, $output);
     }
 
     protected function configureCompletion(CompletionHandler $handler)
@@ -51,6 +46,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             'target',
             Completion::TYPE_ARGUMENT,
             [
+                'init',
                 'dump-complete'
             ]
         ));
@@ -71,6 +67,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             'group',
             Completion::TYPE_ARGUMENT,
             function () {
+                $this->getManager();
                 $names = [];
                 $groups = $this->manager->getGroups();
                 foreach ($groups as $group) {
@@ -85,6 +82,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             'site',
             Completion::TYPE_ARGUMENT,
             function () {
+                $this->getManager();
                 $context = $this->handler->getContext();
                 $command = $context->getWordAtIndex(1);
                 $names = [];
@@ -105,5 +103,12 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 return $names;
             }
         ));
+    }
+
+    protected function getManager()
+    {
+        $this->config = new CliConfig();
+        $this->config->loadConfigure();
+        $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
     }
 }

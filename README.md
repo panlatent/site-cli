@@ -41,7 +41,7 @@ site:
   enabled: ~/etc/nginx/sites-enabled
 ```
 
-Now, Site CLI will automatically help you to create this file, you only need to run any command. For example:
+Now, Site CLI will automatically help you to create this file, you only need to run any one command. For example:
 ```bash
 $ site-cli config
 ```
