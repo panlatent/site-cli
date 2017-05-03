@@ -11,12 +11,14 @@ namespace Panlatent\SiteCli\Commands;
 
 use Symfony\Component\Console\Command\ListCommand;
 
-class DefaultCommand extends ListCommand
+final class DefaultCommand extends ListCommand
 {
+    const NAME = '_default';
+
     protected function configure()
     {
         parent::configure();
-        $this->setName('default')
+        $this->setName(static::NAME)
             ->setHidden(true);
     }
 }

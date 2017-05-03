@@ -9,9 +9,10 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\CliConfig;
-use Panlatent\SiteCli\ConfManager;
-use Panlatent\SiteCli\NotFoundException;
+use Panlatent\SiteCli\Configure;
+use Panlatent\SiteCli\Site\Manager;
+use Panlatent\SiteCli\Site\NotFoundException;
+use Panlatent\SiteCli\Support\Util;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,56 +21,78 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 abstract class Command extends \Symfony\Component\Console\Command\Command
 {
     /**
-     * @var CliConfig
+     * @var \Panlatent\SiteCli\Application
      */
-    protected $config;
+    protected $application;
 
     /**
-     * @var ConfManager
+     * @var \Panlatent\Container\Container
      */
-    protected $manager;
+    protected $container;
 
-    protected $checkLostSymbolicLink = true;
+    /**
+     * @var \Panlatent\SiteCli\Configure
+     */
+    protected $configure;
 
-    public function __construct($name = null)
+    /**
+     * @var SymfonyStyle
+     */
+    protected $io;
+
+    public function __construct()
     {
-        parent::__construct($name);
+        parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    final protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        $this->application = $this->getApplication();
+        $this->container = $this->application->getContainer();
+        $this->io = new SymfonyStyle($input, $output);
+        $this->configure = $this->container[Configure::class];
+        $this->container->setService(SymfonyStyle::class, $this->io);
+
+        if ( ! method_exists($this, 'register') ||
+            ! is_callable([$this, 'register'])) {
+            return;
+        }
+
         try {
-            $io = new SymfonyStyle($input, $output);
-            $this->config = new CliConfig();
-            $this->config->loadConfigure();
-        } catch (NotFoundException $e) {
-            $io->writeln([
-                '',
-                "<error>{$e->getMessage()}</error>"
-            ]);
-            if ( ! $io->confirm('Create a .site-cli.yml file to your home?', true)) {
-                throw $e;
+            $this->container->injectMethod($this, 'register');
+
+            if ($this->configure['validate']['lost-symbolic-link']) {
+                $this->checkLostSymbolicLink($output);
             }
+        } catch (NotFoundException $e) {
+            if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
+                $this->io->writeln([
+                    '',
+                    "<error>{$e->getMessage()}</error>"
+                ]);
+                if ( ! $this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
+                    throw $e;
+                }
 
-            $command = $this->getApplication()->find('config');
-            $arguments = array(
-                'command' => 'config',
-                'target'    => 'init',
-            );
-            $greetInput = new ArrayInput($arguments);
-            $command->run($greetInput, $output);
-            $this->config->loadConfigure();
+                $this->createUserConfigure($output);
+            }
         }
+    }
 
-        $this->manager = new ConfManager($this->config['site']['available'], $this->config['site']['enabled']);
-        if ($this->checkLostSymbolicLink) {
-            $this->checkLostSymbolicLink($output);
-        }
+    private function createUserConfigure($output)
+    {
+        $command = $this->getApplication()->find('config');
+        $arguments = array(
+            'command' => 'init',
+        );
+        $greetInput = new ArrayInput($arguments);
+        $command->run($greetInput, $output);
     }
 
     private function checkLostSymbolicLink(OutputInterface $output)
     {
-        if ($lostSymbolicLinkEnables = $this->manager->getLostSymbolicLinkEnables()) {
+        $manager = $this->container[Manager::class];
+        if ($lostSymbolicLinkEnables = $manager->getLostSymbolicLinkEnables()) {
             foreach ($lostSymbolicLinkEnables as $enable) {
                 $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
             }

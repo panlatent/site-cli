@@ -7,25 +7,37 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli;
+namespace Panlatent\SiteCli\Site;
 
 use Symfony\Component\Finder\Finder;
 
-class ConfManager
+class Manager
 {
+    /**
+     * @var string
+     */
     protected $available;
 
+    /**
+     * @var string
+     */
     protected $enabled;
 
     /**
-     * @var \Panlatent\SiteCli\SiteGroup[]
+     * @var \Panlatent\SiteCli\Site\Group[]
      */
     protected $groups = [];
 
     public function __construct($available, $enabled)
     {
-        $this->available = $available;
-        $this->enabled = $enabled;
+        if ( ! is_dir($available)) {
+            throw new NotFoundException('site-available directory does not exist');
+        } elseif ( ! is_dir($enabled)) {
+            throw new NotFoundException('site-enabled directory does not exist');
+        }
+
+        $this->available = $available . DIRECTORY_SEPARATOR;
+        $this->enabled = $enabled . DIRECTORY_SEPARATOR;
         $this->parser();
     }
 
@@ -46,7 +58,7 @@ class ConfManager
     }
 
     /**
-     * @return \Panlatent\SiteCli\Site[]
+     * @return \Panlatent\SiteCli\Site\Site[]
      */
     public function getSites()
     {
@@ -59,7 +71,7 @@ class ConfManager
     }
 
     /**
-     * @return \Panlatent\SiteCli\SiteServer[]
+     * @return \Panlatent\SiteCli\Site\Server[]
      */
     public function getServers()
     {
@@ -109,13 +121,13 @@ class ConfManager
         $finder->directories()->depth(0)->in($this->available); // Find group
         foreach ($finder as $directory) {
             $name = $directory->getFilename();
-            $this->groups[$name] = new SiteGroup($this, $name, $directory->getPathname());
+            $this->groups[$name] = new Group($this, $name, $directory->getPathname());
         }
 
         $finder = new Finder();
         $finder->files()->depth(0)->in($this->available); // Find unknown group
         if ($finder->count()) {
-            $this->groups['@default'] = new SiteGroup($this, '@default', $this->available);
+            $this->groups['@default'] = new Group($this, '@default', $this->available);
         }
     }
 }

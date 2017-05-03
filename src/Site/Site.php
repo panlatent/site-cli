@@ -7,7 +7,7 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli;
+namespace Panlatent\SiteCli\Site;
 
 use Panlatent\SiteCli\Support\NginxConfParser;
 use Symfony\Component\Filesystem\Filesystem;
@@ -26,7 +26,7 @@ class Site
 
     private $servers = [];
 
-    public function __construct(SiteGroup $group, $name, $path)
+    public function __construct(Group $group, $name, $path)
     {
         $this->group = $group;
         $this->name = $name;
@@ -35,7 +35,7 @@ class Site
     }
 
     /**
-     * @return \Panlatent\SiteCli\SiteGroup
+     * @return \Panlatent\SiteCli\Site\Group
      */
     public function getGroup()
     {
@@ -98,10 +98,10 @@ class Site
         foreach ($parser as $key => $value) {
             if ($key == 'server') {
                 if ( ! is_numeric(implode('', array_keys($value)))) {
-                    $this->servers[] = new SiteServer($this, $value);
+                    $this->servers[] = new Server($this, $value);
                 } else {
                     foreach ($value as $server) {
-                        $this->servers[] = new SiteServer($this, $server);
+                        $this->servers[] = new Server($this, $server);
                     }
                 }
             }

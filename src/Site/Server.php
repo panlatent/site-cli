@@ -7,9 +7,9 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli;
+namespace Panlatent\SiteCli\Site;
 
-class SiteServer
+class Server
 {
     protected $site;
 
@@ -27,7 +27,7 @@ class SiteServer
     }
 
     /**
-     * @return \Panlatent\SiteCli\Site
+     * @return \Panlatent\SiteCli\Site\Site
      */
     public function getSite()
     {

@@ -9,7 +9,8 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\NotFoundException;
+use Panlatent\SiteCli\Site\NotFoundException;
+use Panlatent\SiteCli\Site\Manager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +18,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class EnableCommand extends Command
 {
+    /**
+     * @var \Panlatent\SiteCli\Site\Manager
+     */
+    protected $manager;
+
+    public function register(Manager $manager)
+    {
+        $this->manager = $manager;
+    }
+
     protected function configure()
     {
         $this->setName('enable')
@@ -41,7 +52,6 @@ class EnableCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
         if (empty($input->getArgument('site'))) {
             $this->enableGroup($input, $output);
         } else {

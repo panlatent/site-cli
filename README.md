@@ -22,7 +22,6 @@ Features
 + List site information
 + Quick switching group/site/server
 + Quick build configuration file from template
-+ Test website 
 
 Installation
 -------------
@@ -33,23 +32,16 @@ $ composer require panlatent/site-cli
 
 [Download](https://github.com/panlatent/site-cli/releases) the library using phar.
   
-Usually, you need create a .site-cli.yml file to your home directory. Edit this file:
-
+Run `init` command wiil create a .site-cli.yml file to your home directory. 
+Edit this file:
 ```yaml
 site:
   available: ~/etc/nginx/sites-available
   enabled: ~/etc/nginx/sites-enabled
 ```
 
-Now, Site CLI will automatically help you to create this file, you only need to run any one command. For example:
-```bash
-$ site-cli config
-```
-
-Run `site-cli config dump-complete` and add shell complete in `~/.zshrc` or `~/.bash_profile`:
-```bash
-source ~/.site-cli.sh
-```
+Run `init --dump-complete` will make a completion script.
+Add shell complete in `~/.zshrc` or `~/.bash_profile`: `source ~/.site-cli.sh`
 
 ### Optional
 ```bash

@@ -1,3 +1,68 @@
+# Site CLI configure file
+#
+# The console application will load this file. If there is a file with the
+# same name in the user home directory, new content will be used. So this
+# file should not be changed.
+
+# -----------------------------------------------------------------------------
+#  Nginx site configure file directories.
+# -----------------------------------------------------------------------------
+available: /etc/nginx/sites-available
+enabled: /etc/nginx/sites-enabled
+
+# -----------------------------------------------------------------------------
+#  Available commands.
+# -----------------------------------------------------------------------------
+commands:
+  - config
+  - enable
+  - disable
+  - list
+
+# -----------------------------------------------------------------------------
+#  Nginx behavior
+# -----------------------------------------------------------------------------
+nginx:
+  auto-reload: true
+  root: true
+  env: default
+  search:
+    - /etc/nginx
+    - /usr/local/etc/nginx
+    - ~/etc/nginx
+
+# -----------------------------------------------------------------------------
+#  Site function settings
+# -----------------------------------------------------------------------------
 site:
-  available: /etc/nginx/sites-available
-  enabled: /etc/nginx/sites-enabled
+  # Default site group name
+  default: "@default"
+  group:
+  server:
+
+optimizer:
+
+test:
+
+validate:
+  lost-symbolic-link: true
+
+# -----------------------------------------------------------------------------
+#  Nginx control commands in different environments.
+# -----------------------------------------------------------------------------
+env:
+  default:
+    start: nginx
+    stop: nginx -s stop
+    restart: nginx -s reopen
+    reload: nginx -s reload
+  brew:
+    start: brew services start nginx
+    stop: brew services stop nginx
+    restart: brew services restart nginx
+    reload: brew services reload nginx
+  ubuntu:
+    start: service nginx start
+    stop: service nginx stop
+    restart: service nginx restart
+    reload: service nginx reload

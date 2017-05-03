@@ -8,33 +8,88 @@
  * @license https://opensource.org/licenses/MIT
  */
 
+/* ----------------------------------------------------------------------------
+ * The program is command-line application. It's based on symfony console
+ * component. It can help you manage Nginx local development configuration.
+ *
+ * This file is the application launcher.
+ * ----------------------------------------------------------------------------
+ */
+use Panlatent\Container\Container;
 use Panlatent\SiteCli\Commands\CompletionCommand;
 use Panlatent\SiteCli\Commands\ConfigCommand;
-use Panlatent\SiteCli\Commands\DefaultCommand;
 use Panlatent\SiteCli\Commands\DisableCommand;
 use Panlatent\SiteCli\Commands\EnableCommand;
+use Panlatent\SiteCli\Commands\InitCommand;
 use Panlatent\SiteCli\Commands\ListCommand;
 use Panlatent\SiteCli\Application;
+use Panlatent\SiteCli\Configure;
+use Panlatent\SiteCli\Site\Manager;
 
+/* ----------------------------------------------------------------------------
+ * Check PHP version and composer autoload file.
+ * ----------------------------------------------------------------------------
+ */
 if (version_compare(PHP_VERSION, '5.5', '<')) {
     die("Site CLI need php version not lower than 5.5\n");
-}
-
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require(__DIR__ . '/../vendor/autoload.php');
-} else {
+} elseif ( ! file_exists(__DIR__ . '/../vendor/autoload.php')) {
     die('Not found composer autoload.php');
 }
 
-$app = new Application();
-$default = new DefaultCommand();
+/* ----------------------------------------------------------------------------
+ * Require composer autoload.
+ * ----------------------------------------------------------------------------
+ */
+require(__DIR__ . '/../vendor/autoload.php');
 
-$app->add($default);
+/* ----------------------------------------------------------------------------
+ * Register container services.
+ *
+ * Load configure file.
+ * ----------------------------------------------------------------------------
+ */
+$container = new Container();
+
+$container->setService(Configure::class, function() {
+    return new Configure([
+        __DIR__ . '/../.site-cli.yml',
+        '?~/.site-cli.yml' // optional
+    ]);
+});
+
+$container->setService(Manager::class, function() use($container) {
+    return new Manager($container[Configure::class]['available'],
+        $container[Configure::class]['enabled']);
+});
+
+/* ----------------------------------------------------------------------------
+ * Build a symfony console application.
+ *
+ * The Application uses a custom command replace default command(list).
+ * ----------------------------------------------------------------------------
+ */
+$app = new Application($container);
+
+/* ----------------------------------------------------------------------------
+ * The Completion command is based on stecman/symfony-console-completion.
+ *
+ * Add configuration to shell environment, if you want to use completion.
+ * ----------------------------------------------------------------------------
+ */
 $app->add(new CompletionCommand());
+
+/* ----------------------------------------------------------------------------
+ * Add commands.
+ * ----------------------------------------------------------------------------
+ */
+$app->add(new InitCommand());
 $app->add(new ConfigCommand());
 $app->add(new ListCommand());
 $app->add(new EnableCommand());
 $app->add(new DisableCommand());
 
-$app->setDefaultCommand($default->getName());
+/* ----------------------------------------------------------------------------
+ * Run the console application.
+ * ----------------------------------------------------------------------------
+ */
 $app->run();

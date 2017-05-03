@@ -7,7 +7,9 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli;
+namespace Panlatent\SiteCli\Site;
+
+use Panlatent\SiteCli\Exception;
 
 class NotFoundException extends Exception
 {

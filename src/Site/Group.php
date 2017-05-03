@@ -7,11 +7,11 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli;
+namespace Panlatent\SiteCli\Site;
 
 use Symfony\Component\Finder\Finder;
 
-class SiteGroup
+class Group
 {
     protected $manager;
 
@@ -20,11 +20,11 @@ class SiteGroup
     protected $path;
 
     /**
-     * @var \Panlatent\SiteCli\Site[]
+     * @var \Panlatent\SiteCli\Site\Site[]
      */
     private $sites = [];
 
-    public function __construct(ConfManager $manager, $name, $path)
+    public function __construct(Manager $manager, $name, $path)
     {
         $this->manager = $manager;
         $this->name = $name;
@@ -38,7 +38,7 @@ class SiteGroup
     }
 
     /**
-     * @return \Panlatent\SiteCli\ConfManager
+     * @return \Panlatent\SiteCli\Site\Manager
      */
     public function getManager()
     {
