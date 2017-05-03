@@ -53,7 +53,7 @@ class InitCommand extends Command
             $config['enabled'] = $path . '/sites-enabled';
         }
 
-        file_put_contents($filename, Yaml::dump($config));
+        file_put_contents($filename, Yaml::dump($config, 8));
         Vim::open($filename);
 
         try {
