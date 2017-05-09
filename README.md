@@ -32,7 +32,12 @@ $ composer require panlatent/site-cli
 ```
 
 [Download](https://github.com/panlatent/site-cli/releases) the library using phar.
-  
+
+```bash
+mv site-cli.phar /usr/local/bin/site-cli
+chmod +x /usr/local/bin/site-cli
+```
+
 Run `init` command wiil create a .site-cli.yml file to your home directory. 
 Edit this file:
 ```yaml
@@ -43,17 +48,6 @@ site:
 
 Run `init --dump-complete` will make a completion script.
 Add shell complete in `~/.zshrc` or `~/.bash_profile`: `source ~/.site-cli.sh`
-
-### Optional
-```bash
-ln -s site-cli-path /usr/local/bin/site-cli
-chmod +x /usr/local/bin/site-cli
-```
-Or
-```bash
-mv site-cli.phar /usr/local/bin/site-cli
-chmod +x /usr/local/bin/site-cli
-```
 
 Usage
 -----
@@ -69,6 +63,17 @@ Command:
 + **init**     Init your site-cli configure
 + **list**     Lists sites or groups or servers
 + **vim**      Edit site configuration using Vim
+
+Optional
+---------
+
+### Add nginx.conf vim syntax:
+Download nginx.vim [nginx vim](http://www.vim.org/scripts/script.php?script_id=1886)
+```bash
+mv nginx.vim ~/.vim/syntax/
+vi ~/.vim/filetype.vim
+```
+Add `au BufRead,BufNewFile your_nginx_path/* set ft=nginx`
 
 License
 -------
