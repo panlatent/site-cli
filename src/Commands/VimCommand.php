@@ -31,6 +31,7 @@ class VimCommand extends Command
     protected function configure()
     {
         $this->setName('vim')
+            ->setDescription('Edit site configuration using Vim')
             ->addArgument(
                 'group',
                 InputArgument::REQUIRED,
