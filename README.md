@@ -18,6 +18,7 @@ Site CLI makes me lazy in the development, because I don't want to use `cd` or `
 
 Features
 --------
++ Command/Path completion
 + Site grouping
 + List site information
 + Quick switching group/site/server
@@ -65,7 +66,9 @@ Command:
 + **disable**  Disable a site or a group sites
 + **enable**   Enable a site or a group sites
 + **help**     Displays help for a command
++ **init**     Init your site-cli configure
 + **list**     Lists sites or groups or servers
++ **vim**      Edit site configuration using Vim
 
 License
 -------
