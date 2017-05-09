@@ -52,6 +52,11 @@ class Site
         return $this->name;
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
     public function getServers()
     {
         return $this->servers;

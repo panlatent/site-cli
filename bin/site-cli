@@ -23,6 +23,7 @@ use Panlatent\SiteCli\Commands\EnableCommand;
 use Panlatent\SiteCli\Commands\InitCommand;
 use Panlatent\SiteCli\Commands\ListCommand;
 use Panlatent\SiteCli\Application;
+use Panlatent\SiteCli\Commands\VimCommand;
 use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Site\Manager;
 
@@ -87,6 +88,7 @@ $app->add(new ConfigCommand());
 $app->add(new ListCommand());
 $app->add(new EnableCommand());
 $app->add(new DisableCommand());
+$app->add(new VimCommand());
 
 /* ----------------------------------------------------------------------------
  * Run the console application.

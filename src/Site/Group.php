@@ -50,6 +50,11 @@ class Group
         return $this->name;
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
     public function getEnableSiteCount()
     {
         $count = 0;
