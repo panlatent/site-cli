@@ -116,6 +116,16 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 return $names;
             }
         ));
+
+        $handler->addHandler(new Completion(
+            'edit',
+            'editor',
+            Completion::TYPE_OPTION,
+            [
+                'vim',
+                'sublime'
+            ]
+        ));
     }
 
     /**

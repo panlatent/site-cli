@@ -56,13 +56,13 @@ $ site-cli [command] [argment]
 ```
 
 Command:
++ **init**     Init your site-cli configure
 + **config**   Setting your .site-cli.yml
 + **disable**  Disable a site or a group sites
 + **enable**   Enable a site or a group sites
-+ **help**     Displays help for a command
-+ **init**     Init your site-cli configure
++ **edit**     Edit site configuration using editor
 + **list**     Lists sites or groups or servers
-+ **vim**      Edit site configuration using Vim
++ **help**     Displays help for a command
 
 Optional
 ---------

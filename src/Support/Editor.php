@@ -11,7 +11,7 @@ namespace Panlatent\SiteCli\Support;
 
 use Panlatent\SiteCli\Exception;
 
-class Vim
+class Editor
 {
     protected static $descriptors = [
         ['file', '/dev/tty', 'r'],
@@ -19,9 +19,9 @@ class Vim
         ['file', '/dev/tty', 'w'],
     ];
 
-    public static function open($filename)
+    public static function vim($filename)
     {
-        $process = proc_open('vim ' . $filename, static::$descriptors, $pipes);
+        $process = proc_open('vim ' . escapeshellarg($filename), static::$descriptors, $pipes);
         if ( ! is_resource($process)) {
             throw new Exception('Open vim failed');
         }
@@ -32,5 +32,10 @@ class Vim
             }
             usleep(100);
         }
+    }
+
+    public static function sublime($filename)
+    {
+        exec('subl ' . escapeshellarg($filename) . ' >/dev/null 2>&1');
     }
 }

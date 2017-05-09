@@ -12,7 +12,7 @@ namespace Panlatent\SiteCli\Commands;
 use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\Support\Util;
-use Panlatent\SiteCli\Support\Vim;
+use Panlatent\SiteCli\Support\Editor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +54,7 @@ class InitCommand extends Command
         }
 
         file_put_contents($filename, Yaml::dump($config, 8));
-        Vim::open($filename);
+        Editor::vim($filename);
 
         try {
             new Configure($filename);
