@@ -36,6 +36,13 @@ class ConfigCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if ( ! $input->getArgument('value')) {
+            $this->showItem($input->getArgument('name'));
+        }
+    }
 
+    protected function showItem($name)
+    {
+        $this->io->writeln($this->configure->get($name));
     }
 }

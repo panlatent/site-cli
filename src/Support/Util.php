@@ -54,10 +54,9 @@ class Util
     {
         $keys = [];
         foreach ($arr as $key => $value) {
+            $keys[] = $prefix . $key;
             if (is_array($value)) {
                 $keys = array_merge($keys, static::arrayDotKeys($value, $prefix . $key . '.'));
-            } else {
-                $keys[] = $prefix . $key;
             }
         }
 
