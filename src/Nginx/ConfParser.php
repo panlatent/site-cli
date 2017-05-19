@@ -7,12 +7,20 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli\Support;
+/**
+ * SiteCLI - Help you manage Nginx local development configuration
+ *
+ * @author  panlatent@gmail.com
+ * @link    https://github.com/panlatent/site-cli
+ * @license https://opensource.org/licenses/MIT
+ */
+
+namespace Panlatent\SiteCli\Nginx;
 
 use Panlatent\Boost\BStack;
 use Panlatent\Boost\Storage;
 
-class NginxConfParser extends Storage
+class ConfParser extends Storage
 {
     const STATUS_EMPTY = 0;
     const STATUS_KEY = 1;

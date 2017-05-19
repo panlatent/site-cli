@@ -9,7 +9,7 @@
 
 namespace Panlatent\SiteCli\Site;
 
-use Panlatent\SiteCli\Support\NginxConfParser;
+use Panlatent\SiteCli\Nginx\ConfParser;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Site
@@ -99,7 +99,7 @@ class Site
     protected function parser()
     {
         $content = file_get_contents($this->path);
-        $parser = new NginxConfParser($content);
+        $parser = new ConfParser($content);
         foreach ($parser as $key => $value) {
             if ($key == 'server') {
                 if ( ! is_numeric(implode('', array_keys($value)))) {

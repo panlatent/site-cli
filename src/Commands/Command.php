@@ -18,6 +18,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Abstract class Command
+ *
+ * @package Panlatent\SiteCli\Commands
+ */
 abstract class Command extends \Symfony\Component\Console\Command\Command
 {
     /**

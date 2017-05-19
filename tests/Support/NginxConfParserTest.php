@@ -9,13 +9,13 @@
 
 namespace Tests\Support;
 
-use Panlatent\SiteCli\Support\NginxConfParser;
+use Panlatent\SiteCli\Nginx\ConfParser;
 
 class NginxConfParserTest extends \PHPUnit_Framework_TestCase
 {
     public function testAll()
     {
-        $conf = new NginxConfParser(file_get_contents(__DIR__ . '/../_data/default_site.conf'));
+        $conf = new ConfParser(file_get_contents(__DIR__ . '/../_data/default_site.conf'));
         $this->assertEquals([
             'server' =>
                 [

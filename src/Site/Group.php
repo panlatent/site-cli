@@ -11,12 +11,26 @@ namespace Panlatent\SiteCli\Site;
 
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Class Group
+ *
+ * @package Panlatent\SiteCli\Site
+ */
 class Group
 {
+    /**
+     * @var \Panlatent\SiteCli\Site\Manager
+     */
     protected $manager;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $path;
 
     /**
@@ -24,6 +38,13 @@ class Group
      */
     private $sites = [];
 
+    /**
+     * Group constructor.
+     *
+     * @param \Panlatent\SiteCli\Site\Manager $manager
+     * @param string                          $name
+     * @param string                          $path
+     */
     public function __construct(Manager $manager, $name, $path)
     {
         $this->manager = $manager;
@@ -32,6 +53,9 @@ class Group
         $this->parser();
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->sites);
@@ -45,16 +69,25 @@ class Group
         return $this->manager;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * @return int
+     */
     public function getEnableSiteCount()
     {
         $count = 0;
@@ -67,6 +100,10 @@ class Group
         return $count;
     }
 
+    /**
+     * @param string $name
+     * @return bool|\Panlatent\SiteCli\Site\Site
+     */
     public function getSite($name)
     {
         foreach ($this->sites as $siteName => $site) {
@@ -78,6 +115,9 @@ class Group
         return false;
     }
 
+    /**
+     * @return \Panlatent\SiteCli\Site\Site[]
+     */
     public function getSites()
     {
         return $this->sites;
