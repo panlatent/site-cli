@@ -34,14 +34,9 @@ class EditCommand extends Command
         $this->setName('edit')
             ->setDescription('Edit site configuration using editor')
             ->addArgument(
-                'group',
-                InputArgument::REQUIRED,
-                'Group name'
-            )
-            ->addArgument(
                 'site',
                 InputArgument::OPTIONAL,
-                'Site name in the group'
+                'Site name'
             )
             ->addOption(
                 'editor',
@@ -54,8 +49,14 @@ class EditCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $groupName = $input->getArgument('group');
-        $siteName = $input->getArgument('site');
+        if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
+            $groupName = $input->getArgument('site');
+            $siteName = '';
+        } else {
+            $groupName = substr($input->getArgument('site'), 0, $pos);
+            $siteName = substr($input->getArgument('site'), $pos + 1);
+        }
+
         $editor = $input->getOption('editor');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");

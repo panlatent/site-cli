@@ -33,14 +33,9 @@ class DisableCommand extends Command
         $this->setName('disable')
             ->setDescription('Disable a site or a group sites')
             ->addArgument(
-                'group',
-                InputArgument::REQUIRED,
-                'Group name'
-            )
-            ->addArgument(
                 'site',
-                InputArgument::OPTIONAL,
-                'Site name in the group'
+                InputArgument::REQUIRED,
+                'Site name'
             )
             ->addOption(
                 'clear-lost',
@@ -67,17 +62,18 @@ class DisableCommand extends Command
             }
         }
 
-        if (empty($input->getArgument('site'))) {
-            $this->disableGroup($input, $output);
+
+        if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
+            $this->disableGroup($input->getArgument('site'));
         } else {
-            $this->disableSite($input, $output);
+            $groupName = substr($input->getArgument('site'), 0, $pos);
+            $siteName = substr($input->getArgument('site'), $pos + 1);
+            $this->disableSite($groupName, $siteName);
         }
     }
 
-    protected function disableSite(InputInterface $input, OutputInterface $output)
+    protected function disableSite($groupName, $siteName)
     {
-        $groupName = $input->getArgument('group');
-        $siteName = $input->getArgument('site');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
@@ -86,30 +82,29 @@ class DisableCommand extends Command
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
         if ( ! $site->isEnable()) {
-            $output->writeln("<comment>$groupName / $siteName is disabled, no need to repeat!</comment>");
+            $this->io->writeln("<comment>$groupName / $siteName is disabled, no need to repeat!</comment>");
             return;
         }
 
         $site->disable();
-        $output->writeln("<info>$groupName / $siteName disable success!</info>");
+        $this->io->writeln("<info>$groupName / $siteName disable success!</info>");
     }
 
-    protected function disableGroup(InputInterface $input, OutputInterface $output)
+    protected function disableGroup($groupName)
     {
-        $groupName = $groupName = $input->getArgument('group');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
-        $output->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
+        $this->io->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
         foreach ($group->getSites() as $site) {
             if ( ! $site->isEnable()) {
-                $output->writeln("<comment>x $groupName / {$site->getName()} is disabled, skip!</comment>");
+                $this->io->writeln("<comment>x $groupName / {$site->getName()} is disabled, skip!</comment>");
                 continue;
             }
 
             $site->disable();
-            $output->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
+            $this->io->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
         }
     }
 }

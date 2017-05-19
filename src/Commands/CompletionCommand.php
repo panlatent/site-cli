@@ -53,6 +53,9 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
 
     protected function configureCompletion(CompletionHandler $handler)
     {
+        /*
+         * Config Command
+         */
         $handler->addHandler(new Completion(
             'config',
             'name',
@@ -64,6 +67,9 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             }
         ));
 
+        /*
+         * List Command
+         */
         $handler->addHandler(new Completion(
             'list',
             'type',
@@ -75,6 +81,9 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             ]
         ));
 
+        /*
+         * All commands group argument
+         */
         $handler->addHandler(new Completion(
             Completion::ALL_COMMANDS,
             'group',
@@ -91,35 +100,36 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             }
         ));
 
+        /*
+         * All commands site argument
+         */
         $handler->addHandler(new Completion(
             Completion::ALL_COMMANDS,
             'site',
             Completion::TYPE_ARGUMENT,
             function () {
-                $names = [];
-                if ($manager = $this->getManager()) {
-                    $context = $this->handler->getContext();
-                    $command = $context->getWordAtIndex(1);
+                $context = $this->handler->getContext();
+                $command = $context->getWordAtIndex(1);
 
-                    $group = $manager->getGroup($context->getWordAtIndex(2));
-                    foreach ($group->getSites() as $site) {
-                        if ($command == 'disable') {
-                            if ($site->isEnable()) {
-                                $names[] = $site->getName();
+                $sites = [];
+                if ($manager = $this->getManager()) {
+                    $groups = $manager->getGroups();
+                    foreach ($groups as $group) {
+                        $sites[] = $group->getName();
+                        foreach ($group->getSites() as $site) {
+                            if ($command != 'disable' || $site->isEnable()) {
+                                $sites[] = $group->getName() . '/' . $site->getName();
                             }
-                        } elseif ($command == 'enable') {
-                            if ( ! $site->isEnable()) {
-                                $names[] = $site->getName();
-                            }
-                        } else {
-                            $names[] = $site->getName();
                         }
                     }
                 }
-                return $names;
+                return $sites;
             }
         ));
 
+        /*
+         * Edit command
+         */
         $handler->addHandler(new Completion(
             'edit',
             'editor',

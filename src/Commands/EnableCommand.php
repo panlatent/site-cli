@@ -33,14 +33,9 @@ class EnableCommand extends Command
         $this->setName('enable')
             ->setDescription('Enable a site or a group sites')
             ->addArgument(
-                'group',
-                InputArgument::REQUIRED,
-                'Group name'
-            )
-            ->addArgument(
                 'site',
-                InputArgument::OPTIONAL,
-                'Site name in the group'
+                InputArgument::REQUIRED,
+                'Site name'
             )
             ->addOption(
                 'force',
@@ -52,17 +47,18 @@ class EnableCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (empty($input->getArgument('site'))) {
-            $this->enableGroup($input, $output);
+        $isForce = $input->getOption('force');
+        if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
+            $this->enableGroup($input->getArgument('site'), $isForce);
         } else {
-            $this->enableSite($input, $output);
+            $groupName = substr($input->getArgument('site'), 0, $pos);
+            $siteName = substr($input->getArgument('site'), $pos + 1);
+            $this->enableSite($groupName, $siteName, $isForce);
         }
     }
 
-    protected function enableSite(InputInterface $input, OutputInterface $output)
+    protected function enableSite($groupName, $siteName, $isForce = false)
     {
-        $groupName = $input->getArgument('group');
-        $siteName = $input->getArgument('site');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
@@ -70,31 +66,30 @@ class EnableCommand extends Command
         if (false === ($site = $group->getSite($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
-        if ($site->isEnable() && ! $input->getOption('force')) {
-            $output->writeln("<comment>$groupName / $siteName is enabled, no need to repeat!</comment>");
+        if ($site->isEnable() && ! $isForce) {
+            $this->io->writeln("<comment>$groupName / $siteName is enabled, no need to repeat!</comment>");
             return;
         }
 
         $site->enable();
-        $output->writeln("<info>$groupName / $siteName enable success!</info>");
+        $this->io->writeln("<info>$groupName / $siteName enable success!</info>");
     }
 
-    protected function enableGroup(InputInterface $input, OutputInterface $output)
+    protected function enableGroup($groupName, $isForce = false)
     {
-        $groupName = $groupName = $input->getArgument('group');
         if (false === ($group = $this->manager->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
-        $output->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
+        $this->io->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
         foreach ($group->getSites() as $site) {
-            if ($site->isEnable() && ! $input->getOption('force')) {
-                $output->writeln("<comment>x $groupName / {$site->getName()} is enabled, skip!</comment>");
+            if ($site->isEnable() && ! $isForce) {
+                $this->io->writeln("<comment>x $groupName / {$site->getName()} is enabled, skip!</comment>");
                 continue;
             }
 
             $site->enable();
-            $output->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
+            $this->io->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
         }
     }
 }
