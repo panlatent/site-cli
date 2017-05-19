@@ -9,8 +9,10 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
+use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\Completion;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionHandler;
 use Symfony\Component\Console\Input\InputInterface;
@@ -55,10 +57,11 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
             'config',
             'name',
             Completion::TYPE_ARGUMENT,
-            [
-                'init',
-                'dump-complete'
-            ]
+            function () {
+                /** @var \Panlatent\SiteCli\Configure $config */
+                $config = $this->container->get(Configure::class);
+                return  Util::arrayDotKeys($config->all());
+            }
         ));
 
         $handler->addHandler(new Completion(

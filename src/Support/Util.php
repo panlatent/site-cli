@@ -49,4 +49,18 @@ class Util
     {
         return getcwd();
     }
+
+    public static function arrayDotKeys($arr, $prefix = '')
+    {
+        $keys = [];
+        foreach ($arr as $key => $value) {
+            if (is_array($value)) {
+                $keys = array_merge($keys, static::arrayDotKeys($value, $prefix . $key . '.'));
+            } else {
+                $keys[] = $prefix . $key;
+            }
+        }
+
+        return $keys;
+    }
 }
