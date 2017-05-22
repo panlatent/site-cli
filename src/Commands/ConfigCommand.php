@@ -24,8 +24,8 @@ class ConfigCommand extends Command
     protected function configure()
     {
         $this->setName('config')
-            ->setDescription('Setting your .site-cli.yml and edit site')
-            ->addArgument('name', InputArgument::REQUIRED, 'config name')
+            ->setDescription('Get and set site-cli options')
+            ->addArgument('name', InputArgument::OPTIONAL, 'config name')
             ->addArgument('value', InputArgument::OPTIONAL, 'Set config value');
     }
 
@@ -37,12 +37,33 @@ class ConfigCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ( ! $input->getArgument('value')) {
-            $this->showItem($input->getArgument('name'));
+            $this->show($input->getArgument('name'));
         }
     }
 
-    protected function showItem($name)
+    protected function show($name)
     {
-        $this->io->writeln($this->configure->get($name));
+        if (empty($name)) {
+            $items = $this->configure->all();
+        } else {
+            $items = $this->configure->get($name);
+        }
+
+        $this->writelnRecursion($items);
+    }
+
+    protected function writelnRecursion($items, $prefix = '')
+    {
+        if (is_array($items)) {
+            foreach ($items as $key => $item) {
+                if (is_array($item)) {
+                    $this->writelnRecursion($item, $prefix . $key . '.');
+                } else {
+                    $this->io->writeln($prefix . $key . ' = ' . $item);
+                }
+            }
+        } else {
+            $this->io->writeln($items);
+        }
     }
 }
