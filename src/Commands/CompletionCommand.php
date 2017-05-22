@@ -68,20 +68,6 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
         ));
 
         /*
-         * List Command
-         */
-        $handler->addHandler(new Completion(
-            'list',
-            'type',
-            Completion::TYPE_ARGUMENT,
-            [
-                'groups',
-                'sites',
-                'servers',
-            ]
-        ));
-
-        /*
          * All commands group argument
          */
         $handler->addHandler(new Completion(

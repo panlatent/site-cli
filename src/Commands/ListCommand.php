@@ -9,7 +9,6 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Site\Manager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +22,14 @@ class ListCommand extends Command
      */
     protected $manager;
 
+    protected $isAll;
+
+    protected $isLong;
+
+    protected $group;
+
+    protected $site;
+
     public function register(Manager $manager)
     {
         $this->manager = $manager;
@@ -33,59 +40,63 @@ class ListCommand extends Command
         $this->setName('list')
             ->setDescription('Lists sites or groups or servers')
             ->addArgument(
-                'type',
+                'site',
                 InputArgument::OPTIONAL,
-                'sites/groups/servers',
-                'sites'
+                'List from path'
             )
             ->addOption(
-                'enable',
-                'e',
+                'groups',
+                'g',
                 InputOption::VALUE_NONE,
-                'Show only enabled sites'
+                'List groups'
+            )
+            ->addOption(
+                'servers',
+                's',
+                InputOption::VALUE_NONE,
+                'List servers'
+            )
+            ->addOption(
+                'groups',
+                'g',
+                InputOption::VALUE_NONE,
+                'Only list groups'
+            )
+            ->addOption(
+                'all',
+                'a',
+                InputOption::VALUE_NONE,
+                'Include disable sites'
+            )
+            ->addOption(
+                'long',
+                'l',
+                InputOption::VALUE_NONE,
+                'Show long list'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getArgument('type');
+        $site = $input->getArgument('site');
+        $this->isAll = $input->getOption('all');
+        $this->isLong = $input->getOption('long');
 
-        switch ($type) {
-            case 'sites':
-                $this->listSites($input->getOption('enable'));
-                break;
-            case 'groups':
-                $this->listGroups();
-                break;
-            case 'servers':
-                $this->listServers($input->getOption('enable'));
-                break;
-            default:
-                throw new NotFoundException("Not found list type: $type");
-        }
-    }
-
-    protected function listSites($enable = false)
-    {
-        $sites = $this->manager->getSites();
-        if ($enable) {
-            $sites = array_filter($sites, function($site) {
-                /** @var \Panlatent\SiteCli\Site\Site $site */
-                return $site->isEnable();
-            });
-        }
-
-        sort($sites);
-        foreach ($sites as $site) {
-            $status = $site->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
-            $name = $site->isEnable() ? '<info>%s/%s</info>' : '<comment>%s/%s</comment>';
-            $count = $site->count();
-            $this->io->writeln(sprintf(" - %s $name [%d]",
-                $status,
-                $site->getGroup()->getName(),
-                $site->getName(),
-                $count
-            ));
+        if ($input->getOption('groups')) {
+            $this->listGroups();
+        } elseif ($input->getOption('servers')) {
+            $this->listServers();
+        } elseif ($site) {
+            if (false === ($pos = strpos($site, '/'))) {
+                $this->group = $site;
+                $this->listSites();
+            } else {
+                $this->group = substr($site, 0, $pos);
+                $this->site = substr($site, $pos + 1);
+                $this->listServers();
+            }
+        } else {
+            $this->listSites();
         }
     }
 
@@ -93,33 +104,99 @@ class ListCommand extends Command
     {
         $groups = $this->manager->getGroups();
         sort($groups);
-        foreach ($groups as $group) {
-            $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";
-            $this->io->writeln(sprintf(" - <info>%s</info>: %d site, %s",
-                $group->getName(), $group->count(), $enable));
+        if ($this->isLong) {
+            foreach ($groups as $group) {
+                $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";
+                $this->io->writeln(sprintf(" - <info>%s</info>: %d site, %s",
+                    $group->getName(), $group->count(), $enable));
+            }
+        } else {
+            $list = [];
+            foreach ($groups as $group) {
+                $list[] = $group->getName();
+            }
+            $this->io->writeln($list);
         }
     }
 
-    protected function listServers($enable = false)
+    protected function listSites()
+    {
+        $sites = $this->manager->getSites();
+        if ($this->group) {
+            $sites = array_filter($sites, function ($site) {
+                /** @var \Panlatent\SiteCli\Site\Site $site */
+                return $site->getGroup()->getName() == $this->group;
+            });
+        }
+        if ( ! $this->isAll) {
+            $sites = array_filter($sites, function ($site) {
+                /** @var \Panlatent\SiteCli\Site\Site $site */
+                return $site->isEnable();
+            });
+        }
+        sort($sites);
+        if ($this->isLong) {
+            $list = [];
+            foreach ($sites as $site) {
+                $status = $site->isEnable() ? 'T' : 'F';
+                $name = $site->getGroup()->getName() . '/' .$site->getName();
+                $name = $site->isEnable() ? '<info>' . $name .'</info>' : '<comment>' . $name .'</comment>';
+                $count = $site->count();
+                $list[] = [
+                    $status,
+                    $count,
+                    $name
+                ];
+
+            }
+            $this->io->table([], $list);
+        } else {
+            $list = [];
+            foreach ($sites as $site) {
+                $list[] = $site->getName();
+            }
+            $this->io->writeln($list);
+        }
+    }
+
+    protected function listServers()
     {
         $servers = $this->manager->getServers();
-
-        if ($enable) {
-            $servers = array_filter($servers, function($server) {
+        if ($this->group && $this->site) {
+            $servers = array_filter($servers, function ($server) {
+                /** @var \Panlatent\SiteCli\Site\Server $server */
+                return $server->getSite()->getGroup()->getName() == $this->group
+                    && $server->getSite()->getName() == $this->site;
+            });
+        }
+        if ( ! $this->isAll) {
+            $servers = array_filter($servers, function ($server) {
                 /** @var \Panlatent\SiteCli\Site\Server $server */
                 return $server->getSite()->isEnable();
             });
         }
 
         sort($servers);
-        foreach ($servers as $server) {
-            $status = $server->getSite()->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
-            $this->io->writeln(sprintf(" - %s server <info>%s</info> listen <info>%s</info> on <comment>%s/%s</comment>",
-                $status,
-                $server->getName(),
-                $server->getListen(),
-                $server->getSite()->getGroup()->getName(),
-                $server->getSite()->getName()));
+        if ($this->isLong) {
+            $list = [];
+            foreach ($servers as $server) {
+                $status = $server->getSite()->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
+                $list[] = [
+                    $status,
+                    $server->getName(),
+                    $server->getListen(),
+                    $server->getSite()->getGroup()->getName(),
+                    $server->getSite()->getName()
+                ];
+            }
+            $this->io->table([], $list);
+        } else {
+            $list = [];
+            foreach ($servers as $server) {
+                $list[] = $server->getName();
+            }
+            $this->io->writeln($list);
         }
+
     }
 }
