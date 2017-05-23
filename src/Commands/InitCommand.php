@@ -96,6 +96,6 @@ class InitCommand extends Command
         $completion = implode("\n", $output);
         $content = file_get_contents(__DIR__ . '/../../.site-cli.sh');
         $content = str_replace('{% complete %}', $completion, $content);
-        file_put_contents(Util::utils() . '/site-cli-completion.bash', $content);
+        file_put_contents(Util::project() . '/site-cli-completion.bash', $content);
     }
 }
