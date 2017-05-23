@@ -31,10 +31,25 @@ class InitCommand extends Command
         $this->setName('init')
             ->setDescription('Init site-cli settings')
             ->addOption(
-                'dump-complete',
+                'dump-completion',
                 null,
-                InputOption::VALUE_REQUIRED,
-                'Dump shell completion script'
+                InputOption::VALUE_NONE,
+                'Dump shell completion script contents'
+            )->addOption(
+                'output',
+                'o',
+                InputOption::VALUE_OPTIONAL,
+                'Output file path'
+            )->addOption(
+                'command',
+                'c',
+                InputOption::VALUE_OPTIONAL,
+                'Command name'
+            )->addOption(
+                'program',
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Program name'
             );
     }
 
@@ -45,8 +60,14 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('dump-complete')) {
-            $this->dumpCompleteFile($input->getOption('dump-complete'));
+        if ($input->getOption('dump-completion')) {
+            $result = $this->dumpComplete(
+                $input->getOption('output'),
+                $input->getOption('command'),
+                $input->getOption('program'));
+            if (is_string($result)) {
+                $output->write($result);
+            }
             return true;
         }
 
@@ -94,16 +115,22 @@ class InitCommand extends Command
         return $probables;
     }
 
-    private function dumpCompleteFile($savePath)
+    private function dumpComplete($output, $command, $program)
     {
-        $program = $_SERVER['argv'][0];
-        exec($program .  ' _completion --generate-hook', $output);
-        $completion = implode("\n", $output);
-        $content = file_get_contents(__DIR__ . '/../../build/completion.bash.template');
-        $content = str_replace('{% complete %}', $completion, $content);
-        if (is_dir($savePath)) {
-            $savePath .= '/completion.bash';
+        if (empty($command)) {
+            $command = $_SERVER['argv'][0];
         }
-        file_put_contents($savePath, $content);
+        if (empty($program)) {
+            $program = $_SERVER['argv'][0];
+        }
+        $content = file_get_contents(__DIR__ . '/../../build/completion.bash');
+        $content = str_replace('{% command %}', $command, $content);
+        $content = str_replace('{% program %}', $program, $content);
+        if ( ! empty($output)) {
+            $status = @file_put_contents($output, $content);
+            return (bool)$status;
+        }
+
+        return $content;
     }
 }
