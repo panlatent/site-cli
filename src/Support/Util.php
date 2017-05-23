@@ -55,6 +55,14 @@ class Util
      */
     public static function project()
     {
+        if (false !== strpos(__DIR__, 'phar://')) {
+            $self = substr(__DIR__, strlen('phar://'));
+            $self = substr($self, 0, strlen($self) - strlen('/src/Support'));
+            $pos = strrpos($self, '/');
+
+            return substr($self, 0, $pos);
+        }
+
         return realpath(__DIR__ . '/../../');
     }
 
