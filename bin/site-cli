@@ -50,10 +50,9 @@ require(__DIR__ . '/../vendor/autoload.php');
  * ----------------------------------------------------------------------------
  */
 $container = new Container();
-
 $container->setService(Configure::class, function() {
     return new Configure([
-        __DIR__ . '/../.site-cli.yml',
+        __DIR__ . '/../site-cli.yml',
         '?~/.site-cli.yml' // optional
     ]);
 });

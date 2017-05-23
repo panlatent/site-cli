@@ -94,8 +94,8 @@ class InitCommand extends Command
         $program = $_SERVER['argv'][0];
         exec($program .  ' _completion --generate-hook', $output);
         $completion = implode("\n", $output);
-        $content = file_get_contents(__DIR__ . '/../../.site-cli.sh');
+        $content = file_get_contents(__DIR__ . '/../../build/completion.bash.template');
         $content = str_replace('{% complete %}', $completion, $content);
-        file_put_contents(Util::project() . '/site-cli-completion.bash', $content);
+        file_put_contents(Util::project() . '/completion.bash', $content);
     }
 }
