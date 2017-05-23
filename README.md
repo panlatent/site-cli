@@ -25,18 +25,31 @@ Features
 
 Installation
 -------------
+Using Homebrew on macOS:
+```bash
+$ brew install homebrew/php/site-cli
+```
+
+Download Phar file: 
+
++ [Phar Releases]((https://github.com/panlatent/site-cli/releases))
+```bash
+$ mv site-cli.phar /usr/local/bin/site
+$ chmod +x /usr/local/bin/site
+```
+
 Download the library using composer:
 ```bash
 $ composer require panlatent/site-cli
 ```
 
-[Download](https://github.com/panlatent/site-cli/releases) the library using phar.
-
 ```bash
-mv site-cli.phar /usr/local/bin/site-cli
-chmod +x /usr/local/bin/site-cli
+$ ln -s ./bin/site-cli /usr/local/bin/site
+$ chmod +x /usr/local/bin/site
 ```
 
+Configuration
+-------------
 Run `init` command wiil create a .site-cli.yml file to your home directory. 
 Edit this file:
 ```yaml
