@@ -23,7 +23,7 @@ class Util
             return '?' . realpath(static::home() . substr($path, 2));
         }
 
-        return realpath($path);
+        return preg_match('#^\w+://#', $path) ? $path : realpath($path);
     }
 
     /**
