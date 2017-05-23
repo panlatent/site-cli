@@ -30,7 +30,12 @@ class InitCommand extends Command
     {
         $this->setName('init')
             ->setDescription('Init site-cli settings')
-            ->addOption('dump-complete', null, InputOption::VALUE_OPTIONAL);
+            ->addOption(
+                'dump-complete',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Dump shell completion script'
+            );
     }
 
     public function register(Configure $configure)
@@ -89,16 +94,15 @@ class InitCommand extends Command
         return $probables;
     }
 
-    private function dumpCompleteFile($savePath = '')
+    private function dumpCompleteFile($savePath)
     {
         $program = $_SERVER['argv'][0];
         exec($program .  ' _completion --generate-hook', $output);
         $completion = implode("\n", $output);
         $content = file_get_contents(__DIR__ . '/../../build/completion.bash.template');
         $content = str_replace('{% complete %}', $completion, $content);
-
-        if (empty($savePath)) {
-            $savePath = Util::project() . '/completion.bash';
+        if (is_dir($savePath)) {
+            $savePath .= '/completion.bash';
         }
         file_put_contents($savePath, $content);
     }
