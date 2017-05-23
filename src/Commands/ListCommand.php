@@ -38,6 +38,7 @@ class ListCommand extends Command
     protected function configure()
     {
         $this->setName('list')
+            ->setAliases(['ls'])
             ->setDescription('Lists sites or groups or servers')
             ->addArgument(
                 'site',
