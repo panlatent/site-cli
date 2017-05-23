@@ -50,6 +50,22 @@ class Util
         return getcwd();
     }
 
+    /**
+     * @return string
+     */
+    public static function project()
+    {
+        return realpath(__DIR__ . '/../../');
+    }
+
+    /**
+     * @return string
+     */
+    public static function utils()
+    {
+        return realpath(__DIR__ . '/../../utils/');
+    }
+
     public static function arrayDotKeys($arr, $prefix = '')
     {
         $keys = [];

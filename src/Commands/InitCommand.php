@@ -40,6 +40,11 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if ($input->getOption('dump-complete')) {
+            $this->dumpCompleteFile();
+            return true;
+        }
+
         $config = $this->configure->all();
         $filename = Util::home() . '/.site-cli.yml';
 
@@ -58,9 +63,6 @@ class InitCommand extends Command
 
         try {
             new Configure($filename);
-            if ($input->getOption('dump-complete')) {
-                $this->dumpCompleteFile();
-            }
         } catch (ParseException $e) {
             $this->io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
             unlink($filename);
@@ -94,6 +96,6 @@ class InitCommand extends Command
         $completion = implode("\n", $output);
         $content = file_get_contents(__DIR__ . '/../../.site-cli.sh');
         $content = str_replace('{% complete %}', $completion, $content);
-        file_put_contents(Util::home() . '/.site-cli.sh', $content);
+        file_put_contents(Util::utils() . '/site-cli-completion.bash', $content);
     }
 }
