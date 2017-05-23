@@ -39,7 +39,7 @@ class ListCommand extends Command
     {
         $this->setName('list')
             ->setAliases(['ls'])
-            ->setDescription('Lists sites or groups or servers')
+            ->setDescription('List groups and sites contents')
             ->addArgument(
                 'site',
                 InputArgument::OPTIONAL,

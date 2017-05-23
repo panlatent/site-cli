@@ -29,7 +29,7 @@ class InitCommand extends Command
     protected function configure()
     {
         $this->setName('init')
-            ->setDescription('Init your site-cli configure')
+            ->setDescription('Init site-cli settings')
             ->addOption('dump-complete', null, InputOption::VALUE_NONE);
     }
 
