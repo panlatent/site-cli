@@ -13,12 +13,11 @@ What's This
 Site CLI is a command-line tool that helps you manage and switch Nginx local development 
 environment configuration files.
 
-Site CLI makes me lazy in the development, because I don't want to use `cd` or `ln -s` or more
-, but I enjoy it.
+Site CLI makes me lazy in the development, It's more than just `cd` or `ln -s` , I enjoy it.
 
 Features
 --------
-+ Command/Path completion
++ Command completion
 + Site grouping
 + List site information
 + Quick switching group/site/server
@@ -56,13 +55,13 @@ $ site-cli [command] [argment]
 ```
 
 Command:
-+ **init**     Init your site-cli configure
-+ **config**   Setting your .site-cli.yml
++ **config**   Get and set site-cli options
 + **disable**  Disable a site or a group sites
-+ **enable**   Enable a site or a group sites
 + **edit**     Edit site configuration using editor
-+ **list**     Lists sites or groups or servers
++ **enable**   Enable a site or a group sites
 + **help**     Displays help for a command
++ **init**     Init site-cli settings
++ **list**     [ls] List groups and sites contents
 
 Optional
 ---------
