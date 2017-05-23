@@ -45,22 +45,22 @@ class ListCommand extends Command
                 'List from path'
             )
             ->addOption(
-                'groups',
-                'g',
-                InputOption::VALUE_NONE,
-                'List groups'
+                'filter',
+                'f',
+                InputOption::VALUE_REQUIRED,
+                'Filter list type'
             )
             ->addOption(
-                'servers',
+                'server',
                 's',
                 InputOption::VALUE_NONE,
-                'List servers'
+                'Filter server list type [--filter=server]'
             )
             ->addOption(
-                'groups',
+                'group',
                 'g',
                 InputOption::VALUE_NONE,
-                'Only list groups'
+                'Filter group list type [--filter=group]'
             )
             ->addOption(
                 'all',
@@ -82,9 +82,36 @@ class ListCommand extends Command
         $this->isAll = $input->getOption('all');
         $this->isLong = $input->getOption('long');
 
-        if ($input->getOption('groups')) {
+        $type = '';
+        if ($input->getOption('filter')) {
+            switch ($input->getOption('filter')) {
+                case 's':
+                case 'server':
+                    $type = 'server';
+                    break;
+                case 'g':
+                case 'group':
+                    $type = 'group';
+                    break;
+                case 'site':
+                    $type = 'site';
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        if (empty($type)) {
+            if ($input->getOption('group')) {
+                $type = 'group';
+            } elseif ($input->getOption('server')) {
+                $type = 'server';
+            }
+        }
+
+        if ($type == 'group') {
             $this->listGroups();
-        } elseif ($input->getOption('servers')) {
+        } elseif ($type == 'server') {
             $this->listServers();
         } elseif ($site) {
             if (false === ($pos = strpos($site, '/'))) {
