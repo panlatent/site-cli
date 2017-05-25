@@ -5,17 +5,28 @@ fi
 
 # Site-cli completion function
 function _site_cli_complete {
-    local -x CMDLINE_CONTENTS="$words"
-    local -x CMDLINE_CURSOR_INDEX
-    (( CMDLINE_CURSOR_INDEX = ${#${(j. .)words[1,CURRENT]}} ))
 
-    local RESULT STATUS
-    RESULT=("${(@f)$( {% command %} _completion )}")
+    local CMDLINE_CONTENTS="$COMP_LINE"
+    local CMDLINE_CURSOR_INDEX="$COMP_POINT"
+    local CMDLINE_WORDBREAKS="$COMP_WORDBREAKS";
+
+    export CMDLINE_CONTENTS CMDLINE_CURSOR_INDEX CMDLINE_WORDBREAKS
+
+    local RESULT STATUS;
+
+    RESULT="$({% command %} _completion </dev/null)";
     STATUS=$?;
+
+    local cur mail_check_backup;
+
+    mail_check_backup=$MAILCHECK;
+    MAILCHECK=-1;
+
+    _get_comp_words_by_ref -n : cur;
 
 
     if [ $STATUS -eq 200 ]; then
-        _path_files;
+        _filedir;
         return 0;
 
     elif [ $STATUS -ne 0 ]; then
@@ -23,7 +34,16 @@ function _site_cli_complete {
         return $?;
     fi;
 
-    compadd -- $RESULT
+    COMPREPLY=(`compgen -W "$RESULT" -- $cur`);
+
+    __ltrim_colon_completions "$cur";
+
+    MAILCHECK=mail_check_backup;
 };
 
-compdef _site_cli_complete "{% program %}";
+if [ "$(type -t _get_comp_words_by_ref)" == "function" ]; then
+    complete -F _site_cli_complete "{% program %}";
+else
+    >&2 echo "Completion was not registered for {% program %}:";
+    >&2 echo "The 'bash-completion' package is required but doesn't appear to be installed.";
+fi

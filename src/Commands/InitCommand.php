@@ -61,7 +61,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('dump-completion')) {
-            $result = $this->dumpComplete(
+            $result = $this->dumpCompletion(
                 $input->getOption('output'),
                 $input->getOption('command'),
                 $input->getOption('program'));
@@ -72,7 +72,7 @@ class InitCommand extends Command
         }
 
         $config = $this->configure->all();
-        $filename = Util::home() . '/.site-cli.yml';
+        $filename = $input->getOption('output') ? $input->getOption('output') : Util::home() . '/.site-cli.yml';
 
         $location = $this->locate();
         $path = $this->io->choice('Which of the following is your nginx configure path:', array_merge(
@@ -115,7 +115,7 @@ class InitCommand extends Command
         return $probables;
     }
 
-    private function dumpComplete($output, $command, $program)
+    private function dumpCompletion($output, $command, $program)
     {
         if (empty($command)) {
             $command = $_SERVER['argv'][0];
