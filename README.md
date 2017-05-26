@@ -50,7 +50,11 @@ $ chmod +x /usr/local/bin/site
 
 Configuration
 -------------
-Run `init` command will create a .site-cli.yml file to your home directory. 
+### Custom Configuration
+
+The default configuration provided by Site Cli works very well, but you can still customize it.
+
+Run `init` command will create a .site-cli.yml file to your home directory.
 Edit this file:
 ```yaml
 site:
@@ -58,15 +62,22 @@ site:
   enabled: ~/etc/nginx/sites-enabled
 ```
 
-Run `init --dump-completion` will make a completion script contents and print to the terminal. 
-Use `-o, --output[=OUTPUT]` will write to a file.
+### Add Completion
 
+Run `init --dump-completion` will make a completion script contents and print to the terminal.
+Use `-o, --output[=OUTPUT]` will write to a file. 
 Add shell complete in `~/.zshrc` or `~/.bash_profile`: `source ~/.site-cli.sh`
+
+A example: 
+```bash
+$ site init --dump-comletion -o ~/.site-cli.bash
+$ echo "source .site-cli.bash" >> ~/.zshrc
+```
 
 Usage
 -----
 ```bash
-$ site-cli [command] [argment]
+$ site [command] [argment]
 ```
 
 Command:
