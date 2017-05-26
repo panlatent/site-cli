@@ -38,7 +38,19 @@ class Manager
 
         $this->available = $available . DIRECTORY_SEPARATOR;
         $this->enabled = $enabled . DIRECTORY_SEPARATOR;
-        $this->parser();
+
+        $finder = new Finder();
+        $finder->directories()->depth(0)->in($this->available); // Find group
+        foreach ($finder as $directory) {
+            $name = $directory->getFilename();
+            $this->groups[$name] = new Group($this, $name, $directory->getPathname());
+        }
+
+        $finder = new Finder();
+        $finder->files()->depth(0)->in($this->available); // Find unknown group
+        if ($finder->count()) {
+            $this->groups['@default'] = new Group($this, '@default', $this->available);
+        }
     }
 
     public function getGroup($name)
@@ -113,21 +125,5 @@ class Manager
         }
 
         return $enables;
-    }
-
-    protected function parser()
-    {
-        $finder = new Finder();
-        $finder->directories()->depth(0)->in($this->available); // Find group
-        foreach ($finder as $directory) {
-            $name = $directory->getFilename();
-            $this->groups[$name] = new Group($this, $name, $directory->getPathname());
-        }
-
-        $finder = new Finder();
-        $finder->files()->depth(0)->in($this->available); // Find unknown group
-        if ($finder->count()) {
-            $this->groups['@default'] = new Group($this, '@default', $this->available);
-        }
     }
 }

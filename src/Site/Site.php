@@ -31,7 +31,20 @@ class Site
         $this->group = $group;
         $this->name = $name;
         $this->path = $path;
-        $this->parser();
+
+        $content = file_get_contents($this->path);
+        $parser = new ConfParser($content);
+        foreach ($parser as $key => $value) {
+            if ($key == 'server') {
+                if ( ! is_numeric(implode('', array_keys($value)))) {
+                    $this->servers[] = new Server($this, $value);
+                } else {
+                    foreach ($value as $server) {
+                        $this->servers[] = new Server($this, $server);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -94,22 +107,5 @@ class Site
         }
 
         return $this->group->getManager()->getEnabled() . $this->group->getName() . $this->connector . $this->name;
-    }
-
-    protected function parser()
-    {
-        $content = file_get_contents($this->path);
-        $parser = new ConfParser($content);
-        foreach ($parser as $key => $value) {
-            if ($key == 'server') {
-                if ( ! is_numeric(implode('', array_keys($value)))) {
-                    $this->servers[] = new Server($this, $value);
-                } else {
-                    foreach ($value as $server) {
-                        $this->servers[] = new Server($this, $server);
-                    }
-                }
-            }
-        }
     }
 }

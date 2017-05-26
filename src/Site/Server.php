@@ -23,7 +23,13 @@ class Server
     {
         $this->site = $site;
         $this->configure = $configure;
-        $this->parser();
+
+        if (isset($this->configure['server_name'])) {
+            $this->name = $this->configure['server_name'];
+        }
+        if (isset($this->configure['listen'])) {
+            $this->listen = $this->configure['listen'];
+        }
     }
 
     /**
@@ -56,15 +62,5 @@ class Server
     public function getListen()
     {
         return $this->listen;
-    }
-
-    protected function parser()
-    {
-        if (isset($this->configure['server_name'])) {
-            $this->name = $this->configure['server_name'];
-        }
-        if (isset($this->configure['listen'])) {
-            $this->listen = $this->configure['listen'];
-        }
     }
 }

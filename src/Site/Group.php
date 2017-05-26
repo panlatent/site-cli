@@ -50,7 +50,13 @@ class Group
         $this->manager = $manager;
         $this->name = $name;
         $this->path = $path;
-        $this->parser();
+
+        $finder = new Finder();
+        $finder->files()->depth(0)->in($this->path);
+        foreach ($finder as $file) {
+            $name = $file->getFilename();
+            $this->sites[$name] = new Site($this, $name, $file->getPathname());
+        }
     }
 
     /**
@@ -121,15 +127,5 @@ class Group
     public function getSites()
     {
         return $this->sites;
-    }
-
-    protected function parser()
-    {
-        $finder = new Finder();
-        $finder->files()->depth(0)->in($this->path);
-        foreach ($finder as $file) {
-            $name = $file->getFilename();
-            $this->sites[$name] = new Site($this, $name, $file->getPathname());
-        }
     }
 }
