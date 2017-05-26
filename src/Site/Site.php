@@ -89,7 +89,7 @@ class Site
 
     protected function getEnableFilename()
     {
-        if (0 === strncmp($this->group->getName(), ':', 1)) {
+        if (0 === strncmp($this->group->getName(), '@', 1)) {
             return $this->group->getManager()->getEnabled() . $this->name;
         }
 
