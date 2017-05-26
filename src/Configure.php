@@ -19,6 +19,11 @@ use Panlatent\SiteCli\Support\Util;
  */
 class Configure extends Config
 {
+    /**
+     * Configure constructor.
+     *
+     * @param array|string $path
+     */
     public function __construct($path)
     {
         if (is_string($path)) {

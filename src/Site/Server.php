@@ -9,16 +9,39 @@
 
 namespace Panlatent\SiteCli\Site;
 
+/**
+ * Class Server
+ *
+ * @package Panlatent\SiteCli\Site
+ */
 class Server
 {
+    /**
+     * @var \Panlatent\SiteCli\Site\Site
+     */
     protected $site;
 
+    /**
+     * @var array
+     */
     protected $configure;
 
+    /**
+     * @var string
+     */
     protected $name = '';
 
+    /**
+     * @var string
+     */
     protected $listen = '';
 
+    /**
+     * Server constructor.
+     *
+     * @param \Panlatent\SiteCli\Site\Site $site
+     * @param array                        $configure
+     */
     public function __construct(Site $site, $configure)
     {
         $this->site = $site;
@@ -41,7 +64,7 @@ class Server
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getConfigure()
     {

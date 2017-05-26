@@ -20,14 +20,28 @@ namespace Panlatent\SiteCli\Nginx;
 use Panlatent\Boost\BStack;
 use Panlatent\Boost\Storage;
 
+/**
+ * Class ConfParser
+ *
+ * @package Panlatent\SiteCli\Nginx
+ */
 class ConfParser extends Storage
 {
     const STATUS_EMPTY = 0;
     const STATUS_KEY = 1;
     const STATUS_VALUE = 2;
 
+    /**
+     * @var bool
+     */
     protected $isWithInclude;
 
+    /**
+     * ConfParser constructor.
+     *
+     * @param string $content
+     * @param bool  $withInclude
+     */
     public function __construct($content, $withInclude = false)
     {
         parent::__construct();
@@ -39,16 +53,26 @@ class ConfParser extends Storage
         }
     }
 
+    /**
+     * @return array
+     */
     public function all()
     {
         return $this->storage;
     }
 
+    /**
+     * @return bool
+     */
     public function isWithInclude()
     {
         return $this->isWithInclude;
     }
 
+    /**
+     * @param string $content
+     * @return array
+     */
     protected function parser($content)
     {
         $stack = new BStack();
@@ -118,6 +142,9 @@ class ConfParser extends Storage
         return $current;
     }
 
+    /**
+     * Clean up some useless space.
+     */
     protected function clip()
     {
         array_walk_recursive($this->storage, function(&$value) {
@@ -125,6 +152,9 @@ class ConfParser extends Storage
         });
     }
 
+    /**
+     * Search configure file from include syntax
+     */
     protected function searchInclude()
     {
         array_walk_recursive($this->storage, function($value,  $key) {
@@ -134,6 +164,10 @@ class ConfParser extends Storage
         });
     }
 
+    /**
+     * @param string $content
+     * @return \Generator
+     */
     protected function scanner($content)
     {
         $length = strlen($content);

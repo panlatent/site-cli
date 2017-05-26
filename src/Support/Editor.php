@@ -11,14 +11,28 @@ namespace Panlatent\SiteCli\Support;
 
 use Panlatent\SiteCli\Exception;
 
+/**
+ * Class Editor
+ *
+ * @package Panlatent\SiteCli\Support
+ */
 class Editor
 {
+    /**
+     * @var array
+     */
     protected static $descriptors = [
         ['file', '/dev/tty', 'r'],
         ['file', '/dev/tty', 'w'],
         ['file', '/dev/tty', 'w'],
     ];
 
+    /**
+     * Open a file via Vim in terminal.
+     *
+     * @param string $filename
+     * @throws \Panlatent\SiteCli\Exception
+     */
     public static function vim($filename)
     {
         $process = proc_open('vim ' . escapeshellarg($filename), static::$descriptors, $pipes);
@@ -34,6 +48,11 @@ class Editor
         }
     }
 
+    /**
+     * Open a file via Sublime Text.
+     *
+     * @param string $filename
+     */
     public static function sublime($filename)
     {
         exec('subl ' . escapeshellarg($filename) . ' >/dev/null 2>&1');

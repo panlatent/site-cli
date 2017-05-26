@@ -11,6 +11,11 @@ namespace Panlatent\SiteCli\Site;
 
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Class Manager
+ *
+ * @package Panlatent\SiteCli\Site
+ */
 class Manager
 {
     /**
@@ -28,6 +33,13 @@ class Manager
      */
     protected $groups = [];
 
+    /**
+     * Manager constructor.
+     *
+     * @param string $available
+     * @param string $enabled
+     * @throws \Panlatent\SiteCli\Site\NotFoundException
+     */
     public function __construct($available, $enabled)
     {
         if ( ! is_dir($available)) {
@@ -53,6 +65,10 @@ class Manager
         }
     }
 
+    /**
+     * @param string $name
+     * @return bool|\Panlatent\SiteCli\Site\Group
+     */
     public function getGroup($name)
     {
         foreach ($this->groups as $groupName => $group) {
@@ -64,6 +80,9 @@ class Manager
         return false;
     }
 
+    /**
+     * @return \Panlatent\SiteCli\Site\Group[]
+     */
     public function getGroups()
     {
         return $this->groups;
@@ -113,6 +132,9 @@ class Manager
         return $this->enabled;
     }
 
+    /**
+     * @return array
+     */
     public function getLostSymbolicLinkEnables()
     {
         $enables = [];

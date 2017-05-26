@@ -45,11 +45,19 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
      */
     protected $io;
 
+    /**
+     * Command constructor.
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
+    /**
+     * @param \Symfony\Component\Console\Input\InputInterface   $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @throws \Panlatent\SiteCli\Site\NotFoundException
+     */
     final protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->application = $this->getApplication();

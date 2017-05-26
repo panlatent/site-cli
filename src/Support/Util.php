@@ -9,9 +9,16 @@
 
 namespace Panlatent\SiteCli\Support;
 
+/**
+ * Class Util
+ *
+ * @package Panlatent\SiteCli\Support
+ */
 class Util
 {
     /**
+     * Gets real path include `~` syntax.
+     *
      * @param string $path
      * @return string
      */
@@ -66,6 +73,13 @@ class Util
         return realpath(__DIR__ . '/../../');
     }
 
+    /**
+     * Gets array value via dot syntax.
+     *
+     * @param array  $arr
+     * @param string $prefix
+     * @return array
+     */
     public static function arrayDotKeys($arr, $prefix = '')
     {
         $keys = [];

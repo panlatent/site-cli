@@ -12,20 +12,50 @@ namespace Panlatent\SiteCli\Site;
 use Panlatent\SiteCli\Nginx\ConfParser;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class Site
+ *
+ * @package Panlatent\SiteCli\Site
+ */
 class Site
 {
+    /**
+     * Site symbol link file connector.
+     */
     const CONNECTOR = '_';
 
+    /**
+     * @var \Panlatent\SiteCli\Site\Group
+     */
     protected $group;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $path;
 
+    /**
+     * @var string
+     */
     protected $connector = self::CONNECTOR;
 
+    /**
+     * @var \Panlatent\SiteCli\Site\Server[]
+     */
     private $servers = [];
 
+    /**
+     * Site constructor.
+     *
+     * @param \Panlatent\SiteCli\Site\Group $group
+     * @param  string                       $name
+     * @param  string                       $path
+     */
     public function __construct(Group $group, $name, $path)
     {
         $this->group = $group;
@@ -55,37 +85,58 @@ class Site
         return $this->group;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->servers);
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * @return \Panlatent\SiteCli\Site\Server[]
+     */
     public function getServers()
     {
         return $this->servers;
     }
 
+    /**
+     * @return bool
+     */
     public function isEnable()
     {
         return is_file($this->getEnableFilename());
     }
 
+    /**
+     * Enable the site
+     */
     public function enable()
     {
         $fs = new Filesystem();
         $fs->symlink($this->path, $this->getEnableFilename());
     }
 
+    /**
+     * Disable the site
+     */
     public function disable()
     {
         $fs = new Filesystem();
@@ -100,6 +151,9 @@ class Site
         $this->connector = $connector;
     }
 
+    /**
+     * @return string
+     */
     protected function getEnableFilename()
     {
         if (0 === strncmp($this->group->getName(), '@', 1)) {
