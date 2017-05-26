@@ -13,8 +13,10 @@ use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\Support\Util;
 use Panlatent\SiteCli\Support\Editor;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
@@ -41,11 +43,6 @@ class InitCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Output file path'
             )->addOption(
-                'command',
-                'c',
-                InputOption::VALUE_OPTIONAL,
-                'Command name'
-            )->addOption(
                 'program',
                 'p',
                 InputOption::VALUE_OPTIONAL,
@@ -63,7 +60,6 @@ class InitCommand extends Command
         if ($input->getOption('dump-completion')) {
             $result = $this->dumpCompletion(
                 $input->getOption('output'),
-                $input->getOption('command'),
                 $input->getOption('program'));
             if (is_string($result)) {
                 $output->write($result);
@@ -115,17 +111,27 @@ class InitCommand extends Command
         return $probables;
     }
 
-    private function dumpCompletion($output, $command, $program)
+    private function dumpCompletion($output, $program)
     {
-        if (empty($command)) {
-            $command = $_SERVER['argv'][0];
-        }
         if (empty($program)) {
             $program = $_SERVER['argv'][0];
         }
+
+        $command = $this->getApplication()->find('_completion');
+        $arguments = [
+            'command' => '_completion',
+            '--generate-hook'  => true,
+            '--program'    => $program,
+        ];
+
+        $buffer = new BufferedOutput();
+        $completionInput = new ArrayInput($arguments);
+        $command->run($completionInput, $buffer);
+        $completion = $buffer->fetch();
+
         $content = file_get_contents(__DIR__ . '/../../build/completion.bash');
-        $content = str_replace('{% command %}', $command, $content);
-        $content = str_replace('{% program %}', $program, $content);
+        $content = str_replace('{% completion %}', $completion, $content);
+
         if ( ! empty($output)) {
             $status = @file_put_contents($output, $content);
             return (bool)$status;
