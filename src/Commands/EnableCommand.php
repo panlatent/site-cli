@@ -67,12 +67,12 @@ class EnableCommand extends Command
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
         if ($site->isEnable() && ! $isForce) {
-            $this->io->writeln("<comment>$groupName / $siteName is enabled, no need to repeat!</comment>");
+            $this->io->writeln("<comment>$groupName/$siteName is enabled, no need to repeat!</comment>");
             return;
         }
 
         $site->enable();
-        $this->io->writeln("<info>$groupName / $siteName enable success!</info>");
+        $this->io->writeln("<info>$groupName/$siteName enable success!</info>");
     }
 
     protected function enableGroup($groupName, $isForce = false)
@@ -84,12 +84,12 @@ class EnableCommand extends Command
         $this->io->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
         foreach ($group->getSites() as $site) {
             if ($site->isEnable() && ! $isForce) {
-                $this->io->writeln("<comment>x $groupName / {$site->getName()} is enabled, skip!</comment>");
+                $this->io->writeln("<comment>x $groupName/{$site->getName()} is enabled, skip!</comment>");
                 continue;
             }
 
             $site->enable();
-            $this->io->writeln("<info>√ $groupName / {$site->getName()} enable success!</info>");
+            $this->io->writeln("<info>√ $groupName/{$site->getName()} enable success!</info>");
         }
     }
 }
