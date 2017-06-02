@@ -95,8 +95,8 @@ Optional
 ### Add nginx.conf vim syntax:
 Download nginx.vim [nginx vim](http://www.vim.org/scripts/script.php?script_id=1886)
 ```bash
-mv nginx.vim ~/.vim/syntax/
-vi ~/.vim/filetype.vim
+$ mv nginx.vim ~/.vim/syntax/
+$ vi ~/.vim/filetype.vim
 ```
 Add `au BufRead,BufNewFile your_nginx_path/* set ft=nginx`
 
