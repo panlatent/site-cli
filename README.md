@@ -25,10 +25,6 @@ Features
 
 Installation
 -------------
-Using Homebrew on macOS:
-```bash
-$ brew install homebrew/php/site-cli
-```
 
 Download Phar file: 
 
