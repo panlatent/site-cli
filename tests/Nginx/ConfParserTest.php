@@ -7,11 +7,11 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Tests\Support;
+namespace Tests\Nginx;
 
 use Panlatent\SiteCli\Nginx\ConfParser;
 
-class NginxConfParserTest extends \PHPUnit_Framework_TestCase
+class ConfParserTest extends \PHPUnit_Framework_TestCase
 {
     public function testAll()
     {
