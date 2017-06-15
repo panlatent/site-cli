@@ -131,6 +131,11 @@ class ListCommand extends Command
     protected function listGroups()
     {
         $groups = $this->manager->getGroups();
+        if (empty($groups)) {
+            $this->io->writeln('(empty)');
+            return;
+        }
+
         sort($groups);
         if ($this->isLong) {
             foreach ($groups as $group) {
@@ -162,6 +167,11 @@ class ListCommand extends Command
                 return $site->isEnable();
             });
         }
+        if (empty($sites)) {
+            $this->io->writeln('(empty)');
+            return;
+        }
+
         sort($sites);
         if ($this->isLong) {
             $list = [];
@@ -202,6 +212,10 @@ class ListCommand extends Command
                 /** @var \Panlatent\SiteCli\Site\Server $server */
                 return $server->getSite()->isEnable();
             });
+        }
+        if (empty($servers)) {
+            $this->io->writeln('(empty)');
+            return;
         }
 
         sort($servers);
