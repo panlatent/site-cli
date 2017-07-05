@@ -13,12 +13,10 @@ use Symfony\Component\Console\Command\ListCommand;
 
 final class DefaultCommand extends ListCommand
 {
-    const NAME = '_default';
-
     protected function configure()
     {
         parent::configure();
-        $this->setName(static::NAME)
+        $this->setName('list')
             ->setHidden(true);
     }
 }

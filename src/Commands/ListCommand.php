@@ -37,8 +37,7 @@ class ListCommand extends Command
 
     protected function configure()
     {
-        $this->setName('list')
-            ->setAliases(['ls'])
+        $this->setName('ls')
             ->setDescription('List groups and sites contents')
             ->addArgument(
                 'site',

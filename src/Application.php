@@ -45,7 +45,6 @@ class Application extends \Symfony\Component\Console\Application
         parent::__construct(static::NAME, static::VERSION);
         $this->container = $container;
         $this->add(new DefaultCommand());
-        $this->setDefaultCommand(DefaultCommand::NAME);
     }
 
     /**
@@ -59,7 +58,7 @@ class Application extends \Symfony\Component\Console\Application
     public function all($namespace = null)
     {
         $all = parent::all($namespace);
-        unset($all[DefaultCommand::NAME]);
+        unset($all['list']);
 
         return $all;
     }
