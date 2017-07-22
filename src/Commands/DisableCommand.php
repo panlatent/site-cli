@@ -63,7 +63,6 @@ class DisableCommand extends Command implements Reloadable
             }
         }
 
-
         if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
             $this->disableGroup($input->getArgument('site'));
         } else {
