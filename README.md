@@ -6,37 +6,35 @@ Site CLI
 [![Latest Unstable Version](https://poser.pugx.org/panlatent/site-cli/v/unstable.svg)](https://packagist.org/packages/panlatent/site-cli) 
 [![License](https://poser.pugx.org/panlatent/site-cli/license.svg)](https://packagist.org/packages/panlatent/site-cli)
 
-A command-line tool that help you manage Nginx local development configuration
+A command-line tool that help you more easily use Nginx.
 
 What's This
 ------------
 Site CLI is a command-line tool that helps you manage and switch Nginx local development 
 environment configuration files.
 
-Site CLI makes me lazy in the development, It's more than just `cd` or `ln -s` , I enjoy it.
+This tool makes me lazy in the development, It's more than just `cd && ls`, `ln -s`, `nginx -s` , I enjoy it.
 
 Features
---------
-
-+ **Auto-Completion** - Site CLI supports all commands, arguments and options auto-completion.
-+ **Grouping** - Site CLI uses directories to group Site configuration files. Support the operation of each item 
-and each group.
+---------
++ **Auto-Completion** - Supports all commands, arguments and options auto-completion.
++ **Grouping** - Uses directories to group site configuration files. Support the operation of anyone item or anyone group.
 + **List** - Use `ls` command quick see site list and information.
-+ **Switching** - Use `enable/disable` command can quick Switching site or group, it support auto reload.
++ **Switch** - Use `enable/disable` command can quick switching site or group, it support auto reload.
 + **Service** - Help you use the same command control service in different environments.
 
 Installation
 -------------
-
 Download Phar file: 
-
 + [Phar Releases]((https://github.com/panlatent/site-cli/releases))
+
 ```bash
 $ mv site-cli.phar /usr/local/bin/site
 $ chmod +x /usr/local/bin/site
 ```
 
 Download the library using composer:
+
 ```bash
 $ composer require panlatent/site-cli
 ```
@@ -54,6 +52,7 @@ The default configuration provided by Site Cli works very well, but you can stil
 
 Run `init` command will create a .site-cli.yml file to your home directory.
 Edit this file:
+
 ```yaml
 site:
   available: ~/etc/nginx/sites-available
@@ -67,6 +66,7 @@ Use `-o, --output[=OUTPUT]` will write to a file.
 Add shell complete in `~/.zshrc` or `~/.bash_profile`: `source ~/.site-cli.sh`
 
 A example: 
+
 ```bash
 $ site init --dump-comletion -o ~/.site-cli.bash
 $ echo "source .site-cli.bash" >> ~/.zshrc
@@ -74,25 +74,28 @@ $ echo "source .site-cli.bash" >> ~/.zshrc
 
 Usage
 -----
+
 ```bash
 $ site [command] [argment]
 ```
 
-Command:
-+ **config**   Get and set site-cli options
-+ **service**  Control site service process
-+ **disable**  Disable a site or a group sites
-+ **edit**     Edit site configuration using editor
-+ **enable**   Enable a site or a group sites
-+ **help**     Displays help for a command
-+ **init**     Init site-cli settings
-+ **ls**       List groups and sites contents
+Command List:
+
++ **config**   - Get and set site-cli options
++ **disable**  - Disable a site or a group sites
++ **edit**     - Edit site configuration using editor
++ **enable**   - Enable a site or a group sites
++ **help**     - Displays help for a command
++ **init**     - Init site-cli settings
++ **ls**       - List groups and sites contents
++ **service**  - Control site service process
 
 Optional
 ---------
 
 ### Add nginx.conf vim syntax:
 Download nginx.vim [nginx vim](http://www.vim.org/scripts/script.php?script_id=1886)
+
 ```bash
 $ mv nginx.vim ~/.vim/syntax/
 $ vi ~/.vim/filetype.vim
@@ -102,3 +105,4 @@ Add `au BufRead,BufNewFile your_nginx_path/* set ft=nginx`
 License
 -------
 The Site CLI is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
