@@ -20,7 +20,7 @@ Features
 + **Auto-Completion** - Supports all commands, arguments and options auto-completion.
 + **Grouping** - Uses directories to group site configuration files. Support the operation of any item and ane group.
 + **List** - Use `ls` command quick see site list and information.
-+ **Switch** - Use `enable/disable` command can quick switching site or group, it support auto reload.
++ **Switch** - Use `enable/disable` command can quick switching site or group, it support service auto reload.
 + **Service** - Help you use the same command control service in different environments.
 
 Installation
