@@ -11,9 +11,9 @@ available: /etc/nginx/sites-available
 enabled: /etc/nginx/sites-enabled
 
 # -----------------------------------------------------------------------------
-#  Nginx behavior
+#  Service settings
 # -----------------------------------------------------------------------------
-nginx:
+service:
   auto-reload: true
   program: nginx
   template: default

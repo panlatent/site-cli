@@ -68,7 +68,7 @@ class ServiceCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $params = $this->configure->get('nginx', ['root' => false]);
+        $params = $this->configure->get('service', ['root' => false]);
         $template = $input->getOption('template');
         if ($input->getOption('with-root')) {
             $params['root'] = true;
