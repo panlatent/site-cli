@@ -17,11 +17,13 @@ Site CLI makes me lazy in the development, It's more than just `cd` or `ln -s` ,
 
 Features
 --------
-+ Command completion
-+ Site grouping
-+ List site information
-+ Quick switching group/site/server
-+ Quick build configuration file from template
+
++ **Auto-Completion** - Site CLI supports all commands, arguments and options auto-completion.
++ **Grouping** - Site CLI uses directories to group Site configuration files. Support the operation of each item 
+and each group.
++ **List** - Use `ls` command quick see site list and information.
++ **Switching** - Use `enable/disable` command can quick Switching site or group, it support auto reload.
++ **Service** - Help you use the same command control service in different environments.
 
 Installation
 -------------
@@ -78,7 +80,7 @@ $ site [command] [argment]
 
 Command:
 + **config**   Get and set site-cli options
-+ **ctl**      Control site service process
++ **service**  Control site service process
 + **disable**  Disable a site or a group sites
 + **edit**     Edit site configuration using editor
 + **enable**   Enable a site or a group sites
