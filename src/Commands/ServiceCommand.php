@@ -9,7 +9,7 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Control\Service;
+use Panlatent\SiteCli\Service\Control;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -83,7 +83,7 @@ class ServiceCommand extends Command
             $params['user'] = $input->getOption('user');
         }
 
-        $service = new Service($this->configure->get("templates.$template"), $params);
+        $service = new Control($this->configure->get("templates.$template"), $params);
 
         if ($input->getOption('preview')) {
             $preview = $service->getShellCommand($input->getArgument('signal'));

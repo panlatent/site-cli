@@ -7,14 +7,14 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli\Control;
+namespace Panlatent\SiteCli\Service;
 
 use InvalidArgumentException;
 use Panlatent\SiteCli\Support\Util;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class Service
+class Control
 {
     /**
      * @var array
