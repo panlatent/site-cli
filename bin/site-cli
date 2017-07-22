@@ -18,7 +18,7 @@
 use Panlatent\Container\Container;
 use Panlatent\SiteCli\Commands\CompletionCommand;
 use Panlatent\SiteCli\Commands\ConfigCommand;
-use Panlatent\SiteCli\Commands\ControlCommand;
+use Panlatent\SiteCli\Commands\ServiceCommand;
 use Panlatent\SiteCli\Commands\DisableCommand;
 use Panlatent\SiteCli\Commands\EnableCommand;
 use Panlatent\SiteCli\Commands\InitCommand;
@@ -89,7 +89,7 @@ $app->add(new ListCommand());
 $app->add(new EnableCommand());
 $app->add(new DisableCommand());
 $app->add(new EditCommand());
-$app->add(new ControlCommand());
+$app->add(new ServiceCommand());
 
 /* ----------------------------------------------------------------------------
  * Run the console application.

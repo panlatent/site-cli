@@ -9,17 +9,17 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Nginx\Control;
+use Panlatent\SiteCli\Control\Service;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ControlCommand extends Command
+class ServiceCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('ctl')
+        $this->setName('service')
             ->setDescription('Control site service process')
             ->addArgument(
                 'signal',
@@ -83,15 +83,15 @@ class ControlCommand extends Command
             $params['user'] = $input->getOption('user');
         }
 
-        $control = new Control($this->configure->get("templates.$template"), $params);
+        $service = new Service($this->configure->get("templates.$template"), $params);
 
         if ($input->getOption('preview')) {
-            $preview = $control->getShellCommand($input->getArgument('signal'));
+            $preview = $service->getShellCommand($input->getArgument('signal'));
             $this->io->writeln("<info>$preview</info>");
             return;
         }
 
-        $out = $control->runShellCommand($input->getArgument('signal'));
+        $out = $service->runShellCommand($input->getArgument('signal'));
         if ($input->getOption('echo')) {
             $output->write($out);
         }

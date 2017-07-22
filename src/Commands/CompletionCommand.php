@@ -130,7 +130,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
          * Control command
          */
         $handler->addHandlers([new Completion(
-            'ctl',
+            'service',
             'signal',
             Completion::TYPE_ARGUMENT,
             function () {
@@ -142,7 +142,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 return array_keys($template);
             }
         ), new Completion(
-            'ctl',
+            'service',
             'template',
             Completion::TYPE_OPTION,
             function () {
@@ -153,7 +153,7 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 return array_keys($templates);
             }
         ), new Completion(
-            'ctl',
+            'service',
             'user',
             Completion::TYPE_OPTION,
             function () {

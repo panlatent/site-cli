@@ -7,14 +7,14 @@
  * @license https://opensource.org/licenses/MIT
  */
 
-namespace Panlatent\SiteCli\Nginx;
+namespace Panlatent\SiteCli\Control;
 
 use InvalidArgumentException;
 use Panlatent\SiteCli\Support\Util;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class Control
+class Service
 {
     /**
      * @var array
