@@ -125,6 +125,49 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 'sublime'
             ]
         ));
+
+        /*
+         * Control command
+         */
+        $handler->addHandlers([new Completion(
+            'ctl',
+            'signal',
+            Completion::TYPE_ARGUMENT,
+            function () {
+                /** @var \Panlatent\SiteCli\Configure $config */
+                $config = $this->container->get(Configure::class);
+                $templateName = $config->get('nginx.template', 'default');
+                $template = $config->get("templates.$templateName", []);
+
+                return array_keys($template);
+            }
+        ), new Completion(
+            'ctl',
+            'template',
+            Completion::TYPE_OPTION,
+            function () {
+                /** @var \Panlatent\SiteCli\Configure $config */
+                $config = $this->container->get(Configure::class);
+                $templates = $config->get("templates", []);
+
+                return array_keys($templates);
+            }
+        ), new Completion(
+            'ctl',
+            'user',
+            Completion::TYPE_OPTION,
+            function () {
+                $users = [];
+                if ($list = @file('/etc/passwd')) {
+                    foreach ($list as $item) {
+                        $pos = strpos($item, ':');
+                        $users[] = substr($item, 0, $pos);
+                    }
+                }
+
+                return $users;
+            }
+        )]);
     }
 
     /**

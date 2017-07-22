@@ -11,21 +11,13 @@ available: /etc/nginx/sites-available
 enabled: /etc/nginx/sites-enabled
 
 # -----------------------------------------------------------------------------
-#  Available commands.
-# -----------------------------------------------------------------------------
-commands:
-  - config
-  - enable
-  - disable
-  - list
-
-# -----------------------------------------------------------------------------
 #  Nginx behavior
 # -----------------------------------------------------------------------------
 nginx:
   auto-reload: true
+  program: nginx
+  template: default
   root: true
-  env: default
   search:
     - /etc/nginx
     - /usr/local/etc/nginx
@@ -50,19 +42,26 @@ validate:
 # -----------------------------------------------------------------------------
 #  Nginx control commands in different environments.
 # -----------------------------------------------------------------------------
-env:
+templates:
   default:
-    start: nginx
-    stop: nginx -s stop
-    restart: nginx -s reopen
-    reload: nginx -s reload
+    start: %root:sudo% %program%
+    stop: %root:sudo% %program% -s stop
+    restart: %root:sudo% %program% -s reopen
+    reload: %root:sudo% %program% -s reload
   brew:
-    start: brew services start nginx
-    stop: brew services stop nginx
-    restart: brew services restart nginx
-    reload: brew services reload nginx
+    start: %root:sudo% brew services start %program%
+    stop: %root:sudo% brew services stop %program%
+    restart: %root:sudo% brew services restart %program%
+    reload: %root:sudo% brew services reload %program%
   ubuntu:
-    start: service nginx start
-    stop: service nginx stop
-    restart: service nginx restart
-    reload: service nginx reload
+    start: %root:sudo% service %program% start
+    stop: %root:sudo% service %program% stop
+    restart: %root:sudo% service %program% restart
+    reload: %root:sudo% service %program% reload
+    status: %root:sudo% service %program% status
+  init.d:
+    start: %root:sudo% /etc/init.d/%program% start
+    stop: %root:sudo% /etc/init.d/%program% stop
+    restart: %root:sudo% /etc/init.d/%program% restart
+    reload: %root:sudo% /etc/init.d/%program% reload
+    status: %root:sudo% /etc/init.d/%program% status

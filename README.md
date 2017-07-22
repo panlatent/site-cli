@@ -78,12 +78,13 @@ $ site [command] [argment]
 
 Command:
 + **config**   Get and set site-cli options
++ **ctl**      Control site service process
 + **disable**  Disable a site or a group sites
 + **edit**     Edit site configuration using editor
 + **enable**   Enable a site or a group sites
 + **help**     Displays help for a command
 + **init**     Init site-cli settings
-+ **list**     [ls] List groups and sites contents
++ **ls**       List groups and sites contents
 
 Optional
 ---------
