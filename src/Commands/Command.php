@@ -9,12 +9,16 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Exception;
 use Panlatent\SiteCli\Configure;
+use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Util;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -51,6 +55,30 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
     public function __construct()
     {
         parent::__construct();
+
+        if ($this instanceof Reloadable) {
+            $this->addOption(
+                'without-reload',
+                null,
+                InputOption::VALUE_NONE,
+                'Without automatic reload service when change'
+            );
+        }
+    }
+
+    public function run(InputInterface $input, OutputInterface $output)
+    {
+        $statusCode = parent::run($input, $output);
+
+        if ($this->isReloadService($this, $input)) {
+            if ($this->reloadService()) {
+                $output->writeln('<info>Service has been reloaded!</info>');
+            } else {
+                $output->writeln('<error>Service reload failed!</error>');
+            }
+        }
+
+        return $statusCode;
     }
 
     /**
@@ -112,5 +140,35 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
             $output->writeln('<comment>Note:</comment> Run <info>disable</info> <comment>--clear-lost</comment> will remove them');
             $output->writeln('');
         }
+    }
+
+    /**
+     * @param object $object
+     * @param InputInterface $input
+     * @return bool
+     */
+    private function isReloadService($object, $input)
+    {
+        return $object instanceof Reloadable &&
+            ! $input->getOption('without-reload') &&
+            $this->configure->get('service.reload', false);
+    }
+
+    private function reloadService()
+    {
+        try {
+            $command = $this->getApplication()->find('service');
+            $arguments = [
+                'signal' => 'reload',
+            ];
+
+            $buffer = new BufferedOutput();
+            $completionInput = new ArrayInput($arguments);
+            $statusCode = $command->run($completionInput, $buffer);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return $statusCode == 0;
     }
 }

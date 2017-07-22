@@ -14,7 +14,7 @@ enabled: /etc/nginx/sites-enabled
 #  Service settings
 # -----------------------------------------------------------------------------
 service:
-  auto-reload: true
+  reload: true
   program: nginx
   template: default
   root: true

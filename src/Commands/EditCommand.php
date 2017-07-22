@@ -9,6 +9,7 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Editor;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EditCommand extends Command
+class EditCommand extends Command implements Reloadable
 {
     /**
      * @var \Panlatent\SiteCli\Site\Manager
