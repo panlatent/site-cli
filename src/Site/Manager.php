@@ -117,7 +117,7 @@ class Manager
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAvailable()
     {
@@ -125,7 +125,7 @@ class Manager
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getEnabled()
     {
