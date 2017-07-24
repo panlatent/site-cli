@@ -168,6 +168,65 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
                 return $users;
             }
         )]);
+
+        /*
+         * Create command target argument
+         */
+        $handler->addHandler(new Completion(
+            'create',
+            'target',
+            Completion::TYPE_ARGUMENT,
+            function () {
+                $names = [];
+                if ($manager = $this->getManager()) {
+                    $groups = $manager->getGroups();
+                    foreach ($groups as $group) {
+                        $names[] = $group->getName() . '/';
+                    }
+                }
+                return $names;
+            }
+        ));
+
+        /*
+         * Create command from argument
+         */
+        $handler->addHandler(new Completion(
+            'create',
+            'from',
+            Completion::TYPE_OPTION,
+            function () {
+                $context = $this->handler->getContext();
+                $command = $context->getWordAtIndex(1);
+
+                $sites = [];
+                if ($manager = $this->getManager()) {
+                    $groups = $manager->getGroups();
+                    foreach ($groups as $group) {
+                        $sites[] = $group->getName();
+                        foreach ($group->getSites() as $site) {
+                            if ($command != 'disable' || $site->isEnable()) {
+                                $sites[] = $group->getName() . '/' . $site->getName();
+                            }
+                        }
+                    }
+                }
+                return $sites;
+            }
+        ));
+        $handler->addHandler(new Completion(
+            'create',
+            'server-listen',
+            Completion::TYPE_OPTION,
+            function () {
+                return [80];
+            }
+        ));
+        $handler->addHandler(new Completion\ShellPathCompletion(
+            'create',
+            'server-root',
+            Completion::TYPE_OPTION
+        ));
     }
 
     /**
