@@ -82,6 +82,7 @@ $ site [command] [argment]
 Command List:
 
 + **config**   - Get and set site-cli options
++ **create**   - Create a new site
 + **disable**  - Disable a site or a group sites
 + **edit**     - Edit site configuration using editor
 + **enable**   - Enable a site or a group sites
