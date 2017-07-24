@@ -10,6 +10,7 @@
 namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Reloadable;
+use Panlatent\SiteCli\Service\ReloadTrait;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Editor;
@@ -20,6 +21,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class EditCommand extends Command implements Reloadable
 {
+    use ReloadTrait;
+
     /**
      * @var \Panlatent\SiteCli\Site\Manager
      */
@@ -65,6 +68,7 @@ class EditCommand extends Command implements Reloadable
 
         if (empty($siteName)) {
             $this->openEditor($editor, $group->getPath());
+            $this->disableServiceReload();
             return;
         }
 
@@ -72,7 +76,12 @@ class EditCommand extends Command implements Reloadable
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
 
+        $sha1Old = sha1(file_get_contents($site->getPath()));
         $this->openEditor($editor, $site->getPath());
+        $sha1New = sha1(file_get_contents($site->getPath()));
+        if ($sha1Old == $sha1New) {
+            $this->disableServiceReload();
+        }
     }
 
     protected function openEditor($editor, $path)

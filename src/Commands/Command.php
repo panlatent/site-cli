@@ -149,9 +149,10 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
      */
     private function isReloadService($object, $input)
     {
-        return $object instanceof Reloadable &&
-            ! $input->getOption('without-reload') &&
+        $can = $object instanceof Reloadable && ! $input->getOption('without-reload') &&
             $this->configure->get('service.reload', false);
+
+        return $can && $object->canReloadService();
     }
 
     private function reloadService()

@@ -10,6 +10,7 @@
 namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Reloadable;
+use Panlatent\SiteCli\Service\ReloadTrait;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,6 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DisableCommand extends Command implements Reloadable
 {
+    use ReloadTrait;
+
     /**
      * @var \Panlatent\SiteCli\Site\Manager
      */
@@ -82,6 +85,7 @@ class DisableCommand extends Command implements Reloadable
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
         if ( ! $site->isEnable()) {
+            $this->disableServiceReload();
             $this->io->writeln("<comment>$groupName/$siteName is disabled, no need to repeat!</comment>");
             return;
         }
@@ -96,6 +100,7 @@ class DisableCommand extends Command implements Reloadable
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
+        $hasDisable = false;
         $this->io->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
         foreach ($group->getSites() as $site) {
             if ( ! $site->isEnable()) {
@@ -104,7 +109,12 @@ class DisableCommand extends Command implements Reloadable
             }
 
             $site->disable();
+            $hasDisable = true;
             $this->io->writeln("<info>√ $groupName/{$site->getName()} enable success!</info>");
+        }
+
+        if ( ! $hasDisable) {
+            $this->disableServiceReload();
         }
     }
 }

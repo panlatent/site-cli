@@ -11,5 +11,5 @@ namespace Panlatent\SiteCli\Service;
 
 interface Reloadable
 {
-
+    public function canReloadService();
 }
