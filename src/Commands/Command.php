@@ -15,6 +15,8 @@ use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Util;
+use Stecman\Component\Symfony\Console\BashCompletion\Completion\CompletionAwareInterface;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -27,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @package Panlatent\SiteCli\Commands
  */
-abstract class Command extends \Symfony\Component\Console\Command\Command
+abstract class Command extends \Symfony\Component\Console\Command\Command implements CompletionAwareInterface
 {
     /**
      * @var \Panlatent\SiteCli\Application
@@ -50,11 +52,23 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
     protected $io;
 
     /**
+     * @var \Panlatent\SiteCli\Site\Manager
+     */
+    private $manager;
+
+    /**
      * Command constructor.
      */
     public function __construct()
     {
         parent::__construct();
+    }
+
+    final protected function preInit()
+    {
+        $this->application = $this->getApplication();
+        $this->container = $this->application->getContainer();
+        $this->configure = $this->container[Configure::class];
 
         if ($this instanceof Reloadable) {
             $this->addOption(
@@ -66,21 +80,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
         }
     }
 
-    public function run(InputInterface $input, OutputInterface $output)
-    {
-        $statusCode = parent::run($input, $output);
-
-        if ($this->isReloadService($this, $input)) {
-            if ($this->reloadService()) {
-                $output->writeln('<info>Service has been reloaded!</info>');
-            } else {
-                $output->writeln('<error>Service reload failed!</error>');
-            }
-        }
-
-        return $statusCode;
-    }
-
     /**
      * @param \Symfony\Component\Console\Input\InputInterface   $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
@@ -88,10 +87,9 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
      */
     final protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->application = $this->getApplication();
-        $this->container = $this->application->getContainer();
+        $this->preInit();
+
         $this->io = new SymfonyStyle($input, $output);
-        $this->configure = $this->container[Configure::class];
         $this->container->setService(SymfonyStyle::class, $this->io);
 
         if ( ! method_exists($this, 'register') ||
@@ -118,6 +116,102 @@ abstract class Command extends \Symfony\Component\Console\Command\Command
                 $this->createUserConfigure($output);
             }
         }
+    }
+
+    public function run(InputInterface $input, OutputInterface $output)
+    {
+        $statusCode = parent::run($input, $output);
+
+        if ($this->isReloadService($this, $input)) {
+            if ($this->reloadService()) {
+                $output->writeln('<info>Service has been reloaded!</info>');
+            } else {
+                $output->writeln('<error>Service reload failed!</error>');
+            }
+        }
+
+        return $statusCode;
+    }
+
+    final public function completeArgumentValues($argumentName, CompletionContext $context)
+    {
+        $this->preInit();
+
+        return $this->getArgumentValues($argumentName, $context);
+    }
+
+    final public function completeOptionValues($optionName, CompletionContext $context)
+    {
+        $this->preInit();
+
+        return $this->getOptionValues($optionName, $context);
+    }
+
+    protected function getArgumentValues($argumentName, CompletionContext $context)
+    {
+        $argumentNameMethod = 'getArgument' . Util::strConvertCamel($argumentName);
+        if (method_exists($this, $argumentNameMethod)) {
+            return call_user_func([$this, $argumentNameMethod], $context);
+        }
+
+        return [];
+    }
+
+    protected function getOptionValues($optionName, CompletionContext $context)
+    {
+        $optionNameMethod = 'getOption' . Util::strConvertCamel($optionName);
+        if (method_exists($this, $optionNameMethod)) {
+            return call_user_func([$this, $optionNameMethod], $context);
+        }
+
+        return [];
+    }
+
+    protected function getManager($throwException = true)
+    {
+        if ($this->manager === null) {
+            try {
+                $this->manager = $this->container[Manager::class];
+            } catch (Exception $exception) {
+                if ($throwException) {
+                    throw $exception;
+                }
+
+                return false;
+            }
+        }
+
+        return $this->manager;
+    }
+
+    protected function getArgumentGroup()
+    {
+        $names = [];
+        if ($manager = $this->getManager(false)) {
+            $groups = $manager->getGroups();
+            foreach ($groups as $group) {
+                $names[] = $group->getName();
+            }
+        }
+        return $names;
+    }
+
+    protected function getArgumentSite(CompletionContext $context)
+    {
+        $command = $context->getWordAtIndex(1);
+        $sites = [];
+        if ($manager = $this->getManager(false)) {
+            $groups = $manager->getGroups();
+            foreach ($groups as $group) {
+                $sites[] = $group->getName();
+                foreach ($group->getSites() as $site) {
+                    if ($command != 'disable' || $site->isEnable()) {
+                        $sites[] = $group->getName() . '/' . $site->getName();
+                    }
+                }
+            }
+        }
+        return $sites;
     }
 
     private function createUserConfigure($output)

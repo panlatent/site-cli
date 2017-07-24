@@ -10,8 +10,8 @@
 namespace Panlatent\SiteCli\Commands;
 
 use InvalidArgumentException;
-use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,16 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommand extends Command
 {
-    /**
-     * @var \Panlatent\SiteCli\Site\Manager
-     */
-    protected $manager;
-
-    public function register(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
-
     protected function configure()
     {
         $this->setName('create')
@@ -43,7 +33,7 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $distFile = $this->manager->getAvailable() . $input->getArgument('target');
+        $distFile = $this->getManager()->getAvailable() . $input->getArgument('target');
         $sourceContent = '';
         if ($input->getOption('from')) {
             $this->io->writeln("<info>reading from {$input->getOption('from')}</info>");
@@ -84,7 +74,7 @@ class CreateCommand extends Command
             $siteName = substr($site, $pos + 1);
         }
 
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
         if (false === ($site = $group->getSite($siteName))) {
@@ -105,5 +95,45 @@ class CreateCommand extends Command
         }
 
         file_put_contents($filename, $content);
+    }
+
+    protected function getArgumentValues($argumentName, CompletionContext $context)
+    {
+        if ($argumentName == 'target') {
+            $names = [];
+            if ($this->getManager(false)) {
+                $groups = $this->getManager()->getGroups();
+                foreach ($groups as $group) {
+                    $names[] = $group->getName() . '/';
+                }
+            }
+
+            return $names;
+        }
+        return parent::getArgumentValues($argumentName, $context);
+    }
+
+    protected function getOptionValues($optionName, CompletionContext $context)
+    {
+        if ($optionName == 'from') {
+            $command = $context->getWordAtIndex(1);
+            $sites = [];
+            if ($this->getManager()) {
+                $groups = $this->getManager()->getGroups();
+                foreach ($groups as $group) {
+                    $sites[] = $group->getName();
+                    foreach ($group->getSites() as $site) {
+                        if ($command != 'disable' || $site->isEnable()) {
+                            $sites[] = $group->getName() . '/' . $site->getName();
+                        }
+                    }
+                }
+            }
+            return $sites;
+        } elseif ($optionName == 'server-listen') {
+            return [80];
+        }
+
+        return parent::getOptionValues($optionName, $context);
     }
 }

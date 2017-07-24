@@ -73,6 +73,11 @@ class Util
         return realpath(__DIR__ . '/../../');
     }
 
+    public static function strConvertCamel($string)
+    {
+        return str_replace(' ', '', ucwords(str_replace(['_', '-'], ' ', $string)));
+    }
+
     /**
      * Gets array value via dot syntax.
      *

@@ -23,11 +23,6 @@ use Symfony\Component\Yaml\Yaml;
 
 class InitCommand extends Command
 {
-    /**
-     * @var \Panlatent\SiteCli\Configure
-     */
-    protected $configure;
-
     protected function configure()
     {
         $this->setName('init')

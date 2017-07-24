@@ -11,9 +11,9 @@ namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Service\ReloadTrait;
-use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Editor;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,16 +22,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class EditCommand extends Command implements Reloadable
 {
     use ReloadTrait;
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Manager
-     */
-    protected $manager;
-
-    public function register(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
 
     protected function configure()
     {
@@ -62,7 +52,7 @@ class EditCommand extends Command implements Reloadable
         }
 
         $editor = $input->getOption('editor');
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
@@ -95,5 +85,14 @@ class EditCommand extends Command implements Reloadable
             case 'sublime':
                 Editor::sublime($path);
         }
+    }
+
+    public function getOptionValues($optionName, CompletionContext $context)
+    {
+        if ($optionName == 'editor') {
+            return ['vim', 'sublime'];
+        }
+
+        return parent::completeOptionValues($optionName, $context);
     }
 }

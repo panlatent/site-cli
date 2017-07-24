@@ -9,10 +9,6 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Configure;
-use Panlatent\SiteCli\Site\Manager;
-use Panlatent\SiteCli\Site\NotFoundException;
-use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\Completion;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionHandler;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,12 +32,9 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
         $this->setHidden(true);
     }
 
-    protected function initialize(
-        InputInterface $input,
-        OutputInterface $output
-    ) {
-        parent::initialize($input,
-            $output);
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        parent::initialize($input, $output);
         $this->application = $this->getApplication();
         $this->container = $this->application->getContainer();
     }
@@ -54,190 +47,12 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
     protected function configureCompletion(CompletionHandler $handler)
     {
         /*
-         * Config Command
-         */
-        $handler->addHandler(new Completion(
-            'config',
-            'name',
-            Completion::TYPE_ARGUMENT,
-            function () {
-                /** @var \Panlatent\SiteCli\Configure $config */
-                $config = $this->container->get(Configure::class);
-                return  Util::arrayDotKeys($config->all());
-            }
-        ));
-
-        /*
-         * All commands group argument
-         */
-        $handler->addHandler(new Completion(
-            Completion::ALL_COMMANDS,
-            'group',
-            Completion::TYPE_ARGUMENT,
-            function () {
-                $names = [];
-                if ($manager = $this->getManager()) {
-                    $groups = $manager->getGroups();
-                    foreach ($groups as $group) {
-                        $names[] = $group->getName();
-                    }
-                }
-                return $names;
-            }
-        ));
-
-        /*
-         * All commands site argument
-         */
-        $handler->addHandler(new Completion(
-            Completion::ALL_COMMANDS,
-            'site',
-            Completion::TYPE_ARGUMENT,
-            function () {
-                $context = $this->handler->getContext();
-                $command = $context->getWordAtIndex(1);
-
-                $sites = [];
-                if ($manager = $this->getManager()) {
-                    $groups = $manager->getGroups();
-                    foreach ($groups as $group) {
-                        $sites[] = $group->getName();
-                        foreach ($group->getSites() as $site) {
-                            if ($command != 'disable' || $site->isEnable()) {
-                                $sites[] = $group->getName() . '/' . $site->getName();
-                            }
-                        }
-                    }
-                }
-                return $sites;
-            }
-        ));
-
-        /*
-         * Edit command
-         */
-        $handler->addHandler(new Completion(
-            'edit',
-            'editor',
-            Completion::TYPE_OPTION,
-            [
-                'vim',
-                'sublime'
-            ]
-        ));
-
-        /*
-         * Control command
-         */
-        $handler->addHandlers([new Completion(
-            'service',
-            'signal',
-            Completion::TYPE_ARGUMENT,
-            function () {
-                /** @var \Panlatent\SiteCli\Configure $config */
-                $config = $this->container->get(Configure::class);
-                $templateName = $config->get('nginx.template', 'default');
-                $template = $config->get("templates.$templateName", []);
-
-                return array_keys($template);
-            }
-        ), new Completion(
-            'service',
-            'template',
-            Completion::TYPE_OPTION,
-            function () {
-                /** @var \Panlatent\SiteCli\Configure $config */
-                $config = $this->container->get(Configure::class);
-                $templates = $config->get("templates", []);
-
-                return array_keys($templates);
-            }
-        ), new Completion(
-            'service',
-            'user',
-            Completion::TYPE_OPTION,
-            function () {
-                $users = [];
-                if ($list = @file('/etc/passwd')) {
-                    foreach ($list as $item) {
-                        $pos = strpos($item, ':');
-                        $users[] = substr($item, 0, $pos);
-                    }
-                }
-
-                return $users;
-            }
-        )]);
-
-        /*
-         * Create command target argument
-         */
-        $handler->addHandler(new Completion(
-            'create',
-            'target',
-            Completion::TYPE_ARGUMENT,
-            function () {
-                $names = [];
-                if ($manager = $this->getManager()) {
-                    $groups = $manager->getGroups();
-                    foreach ($groups as $group) {
-                        $names[] = $group->getName() . '/';
-                    }
-                }
-                return $names;
-            }
-        ));
-
-        /*
          * Create command from argument
          */
-        $handler->addHandler(new Completion(
-            'create',
-            'from',
-            Completion::TYPE_OPTION,
-            function () {
-                $context = $this->handler->getContext();
-                $command = $context->getWordAtIndex(1);
-
-                $sites = [];
-                if ($manager = $this->getManager()) {
-                    $groups = $manager->getGroups();
-                    foreach ($groups as $group) {
-                        $sites[] = $group->getName();
-                        foreach ($group->getSites() as $site) {
-                            if ($command != 'disable' || $site->isEnable()) {
-                                $sites[] = $group->getName() . '/' . $site->getName();
-                            }
-                        }
-                    }
-                }
-                return $sites;
-            }
-        ));
-        $handler->addHandler(new Completion(
-            'create',
-            'server-listen',
-            Completion::TYPE_OPTION,
-            function () {
-                return [80];
-            }
-        ));
         $handler->addHandler(new Completion\ShellPathCompletion(
             'create',
             'server-root',
             Completion::TYPE_OPTION
         ));
-    }
-
-    /**
-     * @return \Panlatent\SiteCli\Site\Manager|bool
-     */
-    private function getManager()
-    {
-        try {
-            return $this->container[Manager::class];
-        } catch (NotFoundException $e) {
-            return false;
-        }
     }
 }

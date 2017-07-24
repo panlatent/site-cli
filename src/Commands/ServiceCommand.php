@@ -10,6 +10,7 @@
 namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Control;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,9 +46,8 @@ class ServiceCommand extends Command
             )->addOption(
                 'user',
                 'u',
-                InputOption::VALUE_OPTIONAL,
-                'Service program user',
-                ''
+                InputOption::VALUE_REQUIRED,
+                'Service program user'
             )->addOption(
                 'preview',
                 null,
@@ -95,5 +95,36 @@ class ServiceCommand extends Command
         if ($input->getOption('echo')) {
             $output->write($out);
         }
+    }
+
+    protected function getArgumentValues($argumentName, CompletionContext $context)
+    {
+        if ($argumentName === 'signal') {
+            $templateName = $this->configure->get('nginx.template', 'default');
+            $template = $this->configure->get("templates.$templateName", []);
+
+            return array_keys($template);
+        }
+
+        return parent::getArgumentValues($argumentName, $context);
+    }
+
+    protected function getOptionValues($optionName, CompletionContext $context)
+    {
+        if ($optionName == 'template') {
+            $templates = $this->configure->get("templates", []);
+            return array_keys($templates);
+        } elseif ($optionName == 'user') {
+            $users = [];
+            if ($list = @file('/etc/passwd')) {
+                foreach ($list as $item) {
+                    $pos = strpos($item, ':');
+                    $users[] = substr($item, 0, $pos);
+                }
+            }
+            return $users;
+        }
+
+        return parent::getOptionValues($optionName, $context);
     }
 }

@@ -9,7 +9,8 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Configure;
+use Panlatent\SiteCli\Support\Util;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,11 +28,6 @@ class ConfigCommand extends Command
             ->setDescription('Get and set site-cli options')
             ->addArgument('name', InputArgument::OPTIONAL, 'config name')
             ->addArgument('value', InputArgument::OPTIONAL, 'Set config value');
-    }
-
-    public function register(Configure $configure)
-    {
-        $this->configure = $configure;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -65,5 +61,14 @@ class ConfigCommand extends Command
         } else {
             $this->io->writeln($items);
         }
+    }
+
+    public function getArgumentValues($argumentName, CompletionContext $context)
+    {
+        if ($argumentName == 'name') {
+            return Util::arrayDotKeys($this->configure->all());
+        }
+
+        return parent::completeArgumentValues($argumentName, $context);
     }
 }

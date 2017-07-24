@@ -12,7 +12,6 @@ namespace Panlatent\SiteCli\Commands;
 use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Service\ReloadTrait;
 use Panlatent\SiteCli\Site\NotFoundException;
-use Panlatent\SiteCli\Site\Manager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,16 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class EnableCommand extends Command implements Reloadable
 {
     use ReloadTrait;
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Manager
-     */
-    protected $manager;
-
-    public function register(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
 
     protected function configure()
     {
@@ -63,7 +52,7 @@ class EnableCommand extends Command implements Reloadable
 
     protected function enableSite($groupName, $siteName, $isForce = false)
     {
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
@@ -82,7 +71,7 @@ class EnableCommand extends Command implements Reloadable
 
     protected function enableGroup($groupName, $isForce = false)
     {
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 

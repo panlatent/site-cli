@@ -11,7 +11,6 @@ namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Service\ReloadTrait;
-use Panlatent\SiteCli\Site\Manager;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,16 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DisableCommand extends Command implements Reloadable
 {
     use ReloadTrait;
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Manager
-     */
-    protected $manager;
-
-    public function register(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
 
     protected function configure()
     {
@@ -52,7 +41,7 @@ class DisableCommand extends Command implements Reloadable
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('clear-lost')) {
-            foreach ($this->manager->getLostSymbolicLinkEnables() as $enable) {
+            foreach ($this->getManager()->getLostSymbolicLinkEnables() as $enable) {
                 if (unlink($enable)) {
                     $output->writeln(sprintf("<comment>Success: Clean symbolic link lost file \"%s\"</comment>",
                         $enable));
@@ -77,7 +66,7 @@ class DisableCommand extends Command implements Reloadable
 
     protected function disableSite($groupName, $siteName)
     {
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
@@ -96,7 +85,7 @@ class DisableCommand extends Command implements Reloadable
 
     protected function disableGroup($groupName)
     {
-        if (false === ($group = $this->manager->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->getGroup($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 

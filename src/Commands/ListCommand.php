@@ -9,7 +9,6 @@
 
 namespace Panlatent\SiteCli\Commands;
 
-use Panlatent\SiteCli\Site\Manager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,11 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ListCommand extends Command
 {
-    /**
-     * @var \Panlatent\SiteCli\Site\Manager
-     */
-    protected $manager;
-
     protected $isAll;
 
     protected $isLong;
@@ -29,11 +23,6 @@ class ListCommand extends Command
     protected $group;
 
     protected $site;
-
-    public function register(Manager $manager)
-    {
-        $this->manager = $manager;
-    }
 
     protected function configure()
     {
@@ -129,7 +118,7 @@ class ListCommand extends Command
 
     protected function listGroups()
     {
-        $groups = $this->manager->getGroups();
+        $groups = $this->getManager()->getGroups();
         if (empty($groups)) {
             $this->io->writeln('(empty)');
             return;
@@ -153,7 +142,7 @@ class ListCommand extends Command
 
     protected function listSites()
     {
-        $sites = $this->manager->getSites();
+        $sites = $this->getManager()->getSites();
         if ($this->group) {
             $sites = array_filter($sites, function ($site) {
                 /** @var \Panlatent\SiteCli\Site\Site $site */
@@ -198,7 +187,7 @@ class ListCommand extends Command
 
     protected function listServers()
     {
-        $servers = $this->manager->getServers();
+        $servers = $this->getManager()->getServers();
         if ($this->group && $this->site) {
             $servers = array_filter($servers, function ($server) {
                 /** @var \Panlatent\SiteCli\Site\Server $server */
