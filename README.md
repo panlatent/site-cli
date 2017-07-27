@@ -81,6 +81,7 @@ $ site [command] [argment]
 
 Command List:
 
++ **clear**    - Clear unless symbolic links
 + **config**   - Get and set site-cli options
 + **create**   - Create a new site
 + **disable**  - Disable a site or a group sites

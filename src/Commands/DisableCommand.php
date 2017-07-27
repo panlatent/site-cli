@@ -14,7 +14,6 @@ use Panlatent\SiteCli\Service\ReloadTrait;
 use Panlatent\SiteCli\Site\NotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DisableCommand extends Command implements Reloadable
@@ -29,32 +28,11 @@ class DisableCommand extends Command implements Reloadable
                 'site',
                 InputArgument::REQUIRED,
                 'Site name'
-            )
-            ->addOption(
-                'clear-lost',
-                null,
-                InputOption::VALUE_NONE,
-                'Clear lost symbolic links'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('clear-lost')) {
-            foreach ($this->getManager()->getLostSymbolicLinkEnables() as $enable) {
-                if (unlink($enable)) {
-                    $output->writeln(sprintf("<comment>Success: Clean symbolic link lost file \"%s\"</comment>",
-                        $enable));
-                } else {
-                    $output->writeln(sprintf("<error>Warning: remove symbolic link file \"%s\" fail!</error>",
-                        $enable));
-                }
-            }
-            if (empty($input->getArgument('target'))) {
-                return;
-            }
-        }
-
         if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
             $this->disableGroup($input->getArgument('site'));
         } else {

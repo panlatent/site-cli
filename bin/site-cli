@@ -16,6 +16,7 @@
  * ----------------------------------------------------------------------------
  */
 use Panlatent\Container\Container;
+use Panlatent\SiteCli\Commands\ClearCommand;
 use Panlatent\SiteCli\Commands\CompletionCommand;
 use Panlatent\SiteCli\Commands\ConfigCommand;
 use Panlatent\SiteCli\Commands\CreateCommand;
@@ -86,6 +87,7 @@ $app->add(new CompletionCommand());
  */
 $app->add(new InitCommand());
 $app->add(new ConfigCommand());
+$app->add(new ClearCommand());
 $app->add(new ListCommand());
 $app->add(new EnableCommand());
 $app->add(new DisableCommand());
