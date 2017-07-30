@@ -11,6 +11,7 @@ namespace Panlatent\SiteCli;
 
 use Noodlehaus\Config;
 use Panlatent\SiteCli\Support\Util;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Configure
@@ -38,5 +39,10 @@ class Configure extends Config
 
         $this['available'] = Util::realPath($this['available']);
         $this['enabled'] = Util::realPath($this['enabled']);
+    }
+
+    public function save(Configure $configure)
+    {
+        return @file_put_contents(Util::realPath('~/.site-cli.yml'), Yaml::dump($configure->all()));
     }
 }

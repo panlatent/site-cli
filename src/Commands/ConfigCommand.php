@@ -9,6 +9,7 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,6 +35,10 @@ class ConfigCommand extends Command
     {
         if ( ! $input->getArgument('value')) {
             $this->show($input->getArgument('name'));
+        } else {
+            if ( ! $this->save($input->getArgument('name'), $input->getArgument('value'))) {
+                $this->io->writeln('<error>Configure item set failed!</error>');
+            }
         }
     }
 
@@ -46,6 +51,18 @@ class ConfigCommand extends Command
         }
 
         $this->writelnRecursion($items);
+    }
+
+    protected function save($name, $value)
+    {
+        $old = $this->configure->get($name);
+        if ($old == $value) {
+            return true;
+        }
+        $configure = new Configure(['?~/.site-cli.yml']);
+        $configure->set($name, $value);
+
+        return $this->configure->save($configure);
     }
 
     protected function writelnRecursion($items, $prefix = '')
