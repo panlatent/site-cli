@@ -63,7 +63,7 @@ class ConfigCommand extends Command
         }
     }
 
-    public function getArgumentValues($argumentName, CompletionContext $context)
+    protected function getArgumentValues($argumentName, CompletionContext $context)
     {
         if ($argumentName == 'name') {
             return Util::arrayDotKeys($this->configure->all());

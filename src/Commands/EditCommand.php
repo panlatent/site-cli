@@ -87,7 +87,7 @@ class EditCommand extends Command implements Reloadable
         }
     }
 
-    public function getOptionValues($optionName, CompletionContext $context)
+    protected function getOptionValues($optionName, CompletionContext $context)
     {
         if ($optionName == 'editor') {
             return ['vim', 'sublime'];
