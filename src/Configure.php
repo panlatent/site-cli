@@ -11,6 +11,7 @@ namespace Panlatent\SiteCli;
 
 use Noodlehaus\Config;
 use Panlatent\SiteCli\Support\Util;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -43,6 +44,7 @@ class Configure extends Config
 
     public function save(Configure $configure)
     {
-        return @file_put_contents(Util::realPath('~/.site-cli.yml'), Yaml::dump($configure->all()));
+        $fs = new Filesystem();
+        $fs->dumpFile(Util::realPath('~/.site-cli.yml'), Yaml::dump($configure->all()));
     }
 }

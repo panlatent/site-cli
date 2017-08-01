@@ -9,6 +9,7 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Exception;
 use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
@@ -36,8 +37,10 @@ class ConfigCommand extends Command
         if ( ! $input->getArgument('value')) {
             $this->show($input->getArgument('name'));
         } else {
-            if ( ! $this->save($input->getArgument('name'), $input->getArgument('value'))) {
-                $this->io->writeln('<error>Configure item set failed!</error>');
+            try {
+                $this->save($input->getArgument('name'), $input->getArgument('value'));
+            } catch (Exception $exception) {
+                $this->io->writeln("<error>Configure item set failed! {$exception->getMessage()}</error>");
             }
         }
     }
@@ -57,12 +60,11 @@ class ConfigCommand extends Command
     {
         $old = $this->configure->get($name);
         if ($old == $value) {
-            return true;
+            return;
         }
         $configure = new Configure(['?~/.site-cli.yml']);
         $configure->set($name, $value);
-
-        return $this->configure->save($configure);
+        $this->configure->save($configure);
     }
 
     protected function writelnRecursion($items, $prefix = '')
