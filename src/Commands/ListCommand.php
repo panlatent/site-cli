@@ -130,7 +130,7 @@ class ListCommand extends Command
             foreach ($groups as $group) {
                 $list[] = [$group->count(), $group->getEnableSiteCount(), $group->getName()];
             }
-            $this->io->table(['size', 'enabled', 'name'], $list);
+            $this->io->table(['enabled', 'size', 'group'], $list);
         } else {
             $list = [];
             foreach ($groups as $group) {
