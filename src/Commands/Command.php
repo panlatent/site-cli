@@ -17,6 +17,7 @@ use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\Completion\CompletionAwareInterface;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -90,6 +91,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
         $this->preInit();
 
         $this->io = new SymfonyStyle($input, $output);
+        $this->io->getFormatter()->setStyle('enable', new OutputFormatterStyle('white', null, ['bold']));
         $this->container->setService(SymfonyStyle::class, $this->io);
 
         if ( ! method_exists($this, 'register') ||

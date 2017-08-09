@@ -126,11 +126,11 @@ class ListCommand extends Command
 
         sort($groups);
         if ($this->isLong) {
+            $list = [];
             foreach ($groups as $group) {
-                $enable = "<info>{$group->getEnableSiteCount()}</info> enabled";
-                $this->io->writeln(sprintf(" - <info>%s</info>: %d site, %s",
-                    $group->getName(), $group->count(), $enable));
+                $list[] = [$group->count(), $group->getEnableSiteCount(), $group->getName()];
             }
+            $this->io->table(['size', 'enabled', 'name'], $list);
         } else {
             $list = [];
             foreach ($groups as $group) {
@@ -164,22 +164,22 @@ class ListCommand extends Command
         if ($this->isLong) {
             $list = [];
             foreach ($sites as $site) {
-                $status = $site->isEnable() ? 'T' : 'F';
+                $status = $site->isEnable() ? 'o' : '-';
                 $name = $site->getGroup()->getName() . '/' .$site->getName();
-                $name = $site->isEnable() ? '<info>' . $name .'</info>' : '<comment>' . $name .'</comment>';
+                $name = $site->isEnable() ? '<enable>' . $name .'</enable>' :  $name;
                 $count = $site->count();
                 $list[] = [
                     $status,
                     $count,
-                    $name
+                    $name,
                 ];
 
             }
-            $this->io->table([], $list);
+            $this->io->table([ 'status', 'server', 'site'], $list);
         } else {
             $list = [];
             foreach ($sites as $site) {
-                $list[] = $site->getName();
+                $list[] = $site->isEnable() ? '<enable>' . $site->getName() . '</enable>' : $site->getName();
             }
             $this->io->writeln($list);
         }
@@ -210,16 +210,18 @@ class ListCommand extends Command
         if ($this->isLong) {
             $list = [];
             foreach ($servers as $server) {
-                $status = $server->getSite()->isEnable() ? '<info>√</info>' : '<comment>x</comment>';
+                $name = $server->getSite()->isEnable() ? '<enable>' . $server->getName() . '</enable>' :
+                    $server->getName();
+                $status = $server->getSite()->isEnable() ? 'o' : '-';
                 $list[] = [
                     $status,
-                    $server->getName(),
-                    $server->getListen(),
                     $server->getSite()->getGroup()->getName(),
-                    $server->getSite()->getName()
+                    $server->getSite()->getName(),
+                    $server->getListen(),
+                    $name,
                 ];
             }
-            $this->io->table([], $list);
+            $this->io->table(['status', 'group', 'site', 'listen','server'], $list);
         } else {
             $list = [];
             foreach ($servers as $server) {
@@ -227,6 +229,5 @@ class ListCommand extends Command
             }
             $this->io->writeln($list);
         }
-
     }
 }
