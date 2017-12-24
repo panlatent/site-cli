@@ -22,6 +22,7 @@ Features
 + **List** - Use `ls` command quick see site list and information.
 + **Switch** - Use `enable/disable` command can quick switching site or group, it support service auto reload.
 + **Service** - Help you use the same command control service in different environments.
++ **Alfred3 Workflow Support** -  Provide workflow helpe you quick search and switch site.
 
 Installation
 -------------
