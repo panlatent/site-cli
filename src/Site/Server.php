@@ -86,4 +86,32 @@ class Server extends Node
     {
         return $this->listens;
     }
+
+
+    public function getFirstUrl()
+    {
+        $urls = $this->getUrls();
+
+        return empty($urls) ? '' : $urls[0];
+    }
+
+    /**
+     * @return array
+     */
+    public function getUrls()
+    {
+        $urls = [];
+        $names = preg_split('#\s+#', $this['server_name']);
+        $listens = preg_split('#\s+#', $this['listen']);
+        foreach ($names as $name) {
+            foreach ($listens as $listen) {
+                $url = $listen == 443 ? 'https://' : 'http://';
+                $url .= $name;
+                ($listen != 443 && $listen != 80) and $url .= ':' . $listen;
+                $urls[] = $url;
+            }
+        }
+
+        return $urls;
+    }
 }

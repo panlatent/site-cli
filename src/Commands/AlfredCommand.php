@@ -11,30 +11,17 @@ namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Site\Group;
 use Panlatent\SiteCli\Site\Site;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AlfredCommand extends Command
 {
-    protected $actions = [
-        'enable'  => ['on', 'up', 'en', 'enable', 'open'],
-        'disable' => ['off', 'down', 'dis', 'disable', 'close'],
-        'list'    => ['ls', 'list'],
-    ];
-
     protected function configure()
     {
         $this->setName('alfred')
             ->setDescription('Alfred 3 workflow support')
             ->setHidden(true)
-            ->addArgument(
-                'ctrl',
-                InputArgument::OPTIONAL,
-                'Control command',
-                'list'
-            )
             ->addOption(
                 'keyword',
                 'k',
@@ -47,14 +34,6 @@ class AlfredCommand extends Command
     {
         $items = [];
 
-        $ctrl = $input->getArgument('ctrl');
-        foreach ($this->actions as $action => $chars) {
-            if (in_array($ctrl, $chars)) {
-                $ctrl = $action;
-                break;
-            }
-        }
-
         $keyword = $input->getOption('keyword');
         if (substr(rtrim($keyword), -1) == '>') {
             $name = rtrim(substr(rtrim($keyword), 0, -1));
@@ -63,15 +42,7 @@ class AlfredCommand extends Command
             if ($repo instanceof Site) {
                 foreach ($repo->filter()->servers() as $server) {
                     $item = [];
-                    switch ($ctrl) {
-                        case 'enable':
-                            $arg = 'enable ' . $server->getName();
-                            break;
-                        case 'list':
-                        default:
-                            $arg = 'http://' . $server->getName();
-
-                    }
+                    $arg = $server->getFirstUrl();
                     $item['title'] = $server->getName();
                     $item['subtitle'] = $arg;
                     $item['arg'] = $arg;
@@ -79,40 +50,10 @@ class AlfredCommand extends Command
                     $items[] = $item;
                 }
             } elseif ($repo instanceof Group) {
-                foreach ($repo->filter()->sites() as $site) {
-                    $items[] = [
-                        'title'        => $site->getName(),
-                        'subtitle'     => str_replace('/', ' > ', $site->getPrettyName()),
-                        'arg'          => $site->getPath(),
-                        'icon'         => ['path' => $site->isEnable() ? 'on.png' : 'off.png'],
-                        'autocomplete' => str_replace('/', ' > ', $site->getPrettyName()) . ' > ',
-                        'mods'         => [
-                            'cmd' => [
-                                "valid"    => true,
-                                "arg"      => "alfredapp.com/powerpack/buy/",
-                                "subtitle" => "https://www.alfredapp.com/powerpack/buy/",
-                            ],
-                        ],
-                    ];
-                };
+                $items = $this->getSiteItems();
             }
         } else {
-            foreach ($this->getManager()->filter()->sites() as $site) {
-                $items[] = [
-                    'title'        => $site->getName(),
-                    'subtitle'     => str_replace('/', ' > ', $site->getPrettyName()),
-                    'arg'          => ($site->isEnable() ? 'disable ' : 'enable ') . $site->getPrettyName(),//$site->getPath(),
-                    'icon'         => ['path' => $site->isEnable() ? 'on.png' : 'off.png'],
-                    'autocomplete' => str_replace('/', '>', $site->getPrettyName()) . '>',
-                    'mods'         => [
-                        'cmd' => [
-                            "valid"    => true,
-                            "arg"      => "alfredapp.com/powerpack/buy/",
-                            "subtitle" => "https://www.alfredapp.com/powerpack/buy/",
-                        ],
-                    ],
-                ];
-            };
+            $items = $this->getSiteItems();
         }
 
         if (false !== ($keyword)) {
@@ -124,18 +65,42 @@ class AlfredCommand extends Command
         ]);
     }
 
-    protected
-    function render(
-        $data
-    ) {
+    protected function render($data)
+    {
         $this->io->writeln(json_encode($data));
     }
 
-    protected
-    function search(
-        $keyword,
-        $items
-    ) {
+    protected function getSiteItems()
+    {
+        $items = [];
+        foreach ($this->getManager()->filter()->sites() as $site) {
+            $servers = $site->getServers();
+            $items[] = [
+                'title'        => $site->getName(),
+                'subtitle'     => str_replace('/', ' > ', $site->getPrettyName()),
+                'arg'          => ($site->isEnable() ? 'disable ' : 'enable ') . $site->getPrettyName(),
+                'icon'         => ['path' => $site->isEnable() ? 'on.png' : 'off.png'],
+                'autocomplete' => str_replace('/', '>', $site->getPrettyName()) . '>',
+                'mods'         => [
+                    'cmd' => [
+                        "valid"    => true,
+                        "arg"      => isset($servers[0]) ? $servers[0]->getFirstUrl() : '',
+                        "subtitle" => isset($servers[0]) ? $servers[0]->getFirstUrl() : 'No server',
+                    ],
+                    'alt' => [
+                        "valid"    => true,
+                        "arg"      => $site->getPath(),
+                        "subtitle" => $site->getPath(),
+                    ],
+                ],
+            ];
+        };
+
+        return $items;
+    }
+
+    protected function search($keyword, $items)
+    {
         foreach ($items as $key => $item) {
             similar_text($keyword, $item['title'], $level);
             if (false !== ($pos = strpos($item['title'], $keyword))) {
@@ -151,13 +116,5 @@ class AlfredCommand extends Command
         });
 
         return $items;
-    }
-
-    protected
-    function getServerAction(
-        $ctrl,
-        $server
-    ) {
-
     }
 }
