@@ -11,7 +11,9 @@ namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Service\ReloadTrait;
+use Panlatent\SiteCli\Site\Group;
 use Panlatent\SiteCli\Site\NotFoundException;
+use Panlatent\SiteCli\Site\Site;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,52 +43,42 @@ class EnableCommand extends Command implements Reloadable
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $isForce = $input->getOption('force');
-        if (false === ($pos = strpos($input->getArgument('site'), '/'))) {
-            $this->enableGroup($input->getArgument('site'), $isForce);
-        } else {
-            $groupName = substr($input->getArgument('site'), 0, $pos);
-            $siteName = substr($input->getArgument('site'), $pos + 1);
-            $this->enableSite($groupName, $siteName, $isForce);
+        if (false === ($repo = $this->getManager()->filter()->id($input->getArgument('site')))) {
+            throw new NotFoundException("Not found site");
+        }
+        if ($repo instanceof Group) {
+            $this->enableGroup($repo, $isForce);
+        } elseif ($repo instanceof Site) {
+            $this->enableSite($repo, $isForce);
         }
     }
 
-    protected function enableSite($groupName, $siteName, $isForce = false)
+    protected function enableSite(Site $site, $isForce = false)
     {
-        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
-            throw new NotFoundException("Not found site group \"$groupName\"");
-        }
-
-        if (false === ($site = $group->filter()->site($siteName))) {
-            throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
-        }
         if ($site->isEnable() && ! $isForce) {
             $this->disableServiceReload();
-            $this->io->writeln("<comment>$groupName/$siteName is enabled, no need to repeat!</comment>");
+            $this->io->writeln("<comment>{$site->getPrettyName()} is enabled, no need to repeat!</comment>");
             return;
         }
 
         $site->enable();
-        $this->io->writeln("<info>$groupName/$siteName enable success!</info>");
+        $this->io->writeln("<info>{$site->getPrettyName()} enable success!</info>");
     }
 
-    protected function enableGroup($groupName, $isForce = false)
+    protected function enableGroup(Group $group, $isForce = false)
     {
-        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
-            throw new NotFoundException("Not found site group \"$groupName\"");
-        }
-
-        $this->io->writeln("<comment>Notice: {$group->count()} sites in $groupName group</comment>");
+        $this->io->writeln("<comment>Notice: {$group->count()} sites in {$group->getPrettyName()} group</comment>");
 
         $hasEnable = false;
         foreach ($group->filter()->sites() as $site) {
             if ($site->isEnable() && ! $isForce) {
-                $this->io->writeln("<comment>x $groupName/{$site->getName()} is enabled, skip!</comment>");
+                $this->io->writeln("<comment>x {$group->getPrettyName()}/{$site->getName()} is enabled, skip!</comment>");
                 continue;
             }
 
             $site->enable();
             $hasEnable = true;
-            $this->io->writeln("<info>√ $groupName/{$site->getName()} enable success!</info>");
+            $this->io->writeln("<info>√ {$group->getPrettyName()}/{$site->getName()} enable success!</info>");
         }
 
         if ( ! $hasEnable) {

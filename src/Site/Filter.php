@@ -45,6 +45,18 @@ class Filter extends ArrayIterator
         return new static($repos);
     }
 
+    public function id($id)
+    {
+        $res = false;
+        $this->traversal(function (Node $repo) use ($id, &$res) {
+            if ($repo->getPrettyName() === $id) {
+                $res = $repo;
+            }
+        });
+
+        return $res;
+    }
+
     public function names($name)
     {
         $names = [];
