@@ -16,6 +16,7 @@
  * ----------------------------------------------------------------------------
  */
 use Panlatent\Container\Container;
+use Panlatent\SiteCli\Commands\AlfredCommand;
 use Panlatent\SiteCli\Commands\ClearCommand;
 use Panlatent\SiteCli\Commands\CompletionCommand;
 use Panlatent\SiteCli\Commands\ConfigCommand;
@@ -94,6 +95,7 @@ $app->add(new DisableCommand());
 $app->add(new CreateCommand());
 $app->add(new EditCommand());
 $app->add(new ServiceCommand());
+$app->add(new AlfredCommand());
 
 /* ----------------------------------------------------------------------------
  * Run the console application.
