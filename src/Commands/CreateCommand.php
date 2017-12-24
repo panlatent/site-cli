@@ -74,10 +74,10 @@ class CreateCommand extends Command
             $siteName = substr($site, $pos + 1);
         }
 
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
-        if (false === ($site = $group->getSite($siteName))) {
+        if (false === ($site = $group->filter()->site($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
 
@@ -102,7 +102,7 @@ class CreateCommand extends Command
         if ($argumentName == 'target') {
             $names = [];
             if ($this->getManager(false)) {
-                $groups = $this->getManager()->getGroups();
+                $groups = $this->getManager()->filter()->groups();
                 foreach ($groups as $group) {
                     $names[] = $group->getName() . '/';
                 }
@@ -119,10 +119,10 @@ class CreateCommand extends Command
             $command = $context->getWordAtIndex(1);
             $sites = [];
             if ($this->getManager()) {
-                $groups = $this->getManager()->getGroups();
+                $groups = $this->getManager()->filter()->groups();
                 foreach ($groups as $group) {
                     $sites[] = $group->getName();
-                    foreach ($group->getSites() as $site) {
+                    foreach ($group->filter()->sites() as $site) {
                         if ($command != 'disable' || $site->isEnable()) {
                             $sites[] = $group->getName() . '/' . $site->getName();
                         }

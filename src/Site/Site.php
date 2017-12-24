@@ -10,67 +10,46 @@
 namespace Panlatent\SiteCli\Site;
 
 use Panlatent\SiteCli\Nginx\ConfParser;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class Site
  *
  * @package Panlatent\SiteCli\Site
  */
-class Site
+class Site extends Node
 {
     /**
-     * Site symbol link file connector.
+     * @var Linker
      */
-    const CONNECTOR = '_';
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Group
-     */
-    protected $group;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var string
-     */
-    protected $connector = self::CONNECTOR;
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Server[]
-     */
-    private $servers = [];
+    protected $linker;
 
     /**
      * Site constructor.
      *
-     * @param \Panlatent\SiteCli\Site\Group $group
-     * @param  string                       $name
-     * @param  string                       $path
+     * @param  string     $name
+     * @param  string     $path
+     * @param  Group|null $parent
      */
-    public function __construct(Group $group, $name, $path)
+    public function __construct($name, $path, Group $parent = null)
     {
-        $this->group = $group;
         $this->name = $name;
         $this->path = $path;
+        $this->parent = $parent;
+        $this->linker = new Linker($this);
+        $this->reload();
+    }
 
+    public function reload()
+    {
         $content = file_get_contents($this->path);
         $parser = new ConfParser($content);
         foreach ($parser as $key => $value) {
             if ($key == 'server') {
                 if ( ! is_numeric(implode('', array_keys($value)))) {
-                    $this->servers[] = new Server($this, $value);
+                    $this[] = $this->makeServer($value);
                 } else {
                     foreach ($value as $server) {
-                        $this->servers[] = new Server($this, $server);
+                        $this[] = $this->makeServer($server);
                     }
                 }
             }
@@ -82,31 +61,7 @@ class Site
      */
     public function getGroup()
     {
-        return $this->group;
-    }
-
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->servers);
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
+        return $this->parent;
     }
 
     /**
@@ -114,7 +69,7 @@ class Site
      */
     public function getServers()
     {
-        return $this->servers;
+        return $this->getArrayCopy();
     }
 
     /**
@@ -122,7 +77,7 @@ class Site
      */
     public function isEnable()
     {
-        return is_file($this->getEnableFilename());
+        return $this->linker->isLink();
     }
 
     /**
@@ -130,8 +85,7 @@ class Site
      */
     public function enable()
     {
-        $fs = new Filesystem();
-        $fs->symlink($this->path, $this->getEnableFilename());
+        $this->linker->link();
     }
 
     /**
@@ -139,27 +93,11 @@ class Site
      */
     public function disable()
     {
-        $fs = new Filesystem();
-        $fs->remove($this->getEnableFilename());
+        $this->linker->unlink();
     }
 
-    /**
-     * @param string $connector
-     */
-    public function setConnector($connector)
+    protected function makeServer($params)
     {
-        $this->connector = $connector;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getEnableFilename()
-    {
-        if (0 === strncmp($this->group->getName(), '@', 1)) {
-            return $this->group->getManager()->getEnabled() . $this->name;
-        }
-
-        return $this->group->getManager()->getEnabled() . $this->group->getName() . $this->connector . $this->name;
+        return new Server(null, $this->path, $params, $this);
     }
 }

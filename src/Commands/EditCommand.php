@@ -52,7 +52,7 @@ class EditCommand extends Command implements Reloadable
         }
 
         $editor = $input->getOption('editor');
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
@@ -62,7 +62,7 @@ class EditCommand extends Command implements Reloadable
             return;
         }
 
-        if (false === ($site = $group->getSite($siteName))) {
+        if (false === ($site = $group->filter()->site($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
 

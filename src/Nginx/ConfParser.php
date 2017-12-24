@@ -32,25 +32,16 @@ class ConfParser extends Storage
     const STATUS_VALUE = 2;
 
     /**
-     * @var bool
-     */
-    protected $isWithInclude;
-
-    /**
      * ConfParser constructor.
      *
      * @param string $content
-     * @param bool  $withInclude
+     * @throws \Panlatent\Boost\Exception
      */
-    public function __construct($content, $withInclude = false)
+    public function __construct($content)
     {
         parent::__construct();
-        $this->isWithInclude = $withInclude;
         $this->storage = $this->parser($content);
         $this->clip();
-        if ($withInclude) {
-            $this->searchInclude();
-        }
     }
 
     /**
@@ -59,14 +50,6 @@ class ConfParser extends Storage
     public function all()
     {
         return $this->storage;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isWithInclude()
-    {
-        return $this->isWithInclude;
     }
 
     /**
@@ -82,7 +65,7 @@ class ConfParser extends Storage
         $value = '';
 
         foreach ($this->scanner($content) as $char) {
-            if ($status === self::STATUS_EMPTY && ($char == ' ' || $char == "\t" || $char == "\n")) {
+            if ($status === self::STATUS_EMPTY && ($char == ' ' || $char == "\t" || $char == "\n" || $char == "\r")) {
                 continue;
             } elseif ($status === self::STATUS_KEY && ($char == ' ' || $char == "\t" || $char == "\n")) {
                 $status = self::STATUS_VALUE;
@@ -149,18 +132,6 @@ class ConfParser extends Storage
     {
         array_walk_recursive($this->storage, function(&$value) {
             $value = trim(preg_replace('#^\s*"(.*)"\s*$#', '\1', $value), " \t");
-        });
-    }
-
-    /**
-     * Search configure file from include syntax
-     */
-    protected function searchInclude()
-    {
-        array_walk_recursive($this->storage, function($value,  $key) {
-            if ($key == 'include') {
-                // @todo
-            }
         });
     }
 

@@ -14,76 +14,76 @@ namespace Panlatent\SiteCli\Site;
  *
  * @package Panlatent\SiteCli\Site
  */
-class Server
+class Server extends Node
 {
-    /**
-     * @var \Panlatent\SiteCli\Site\Site
-     */
-    protected $site;
+    protected $startLine;
+
+    protected $endLine;
 
     /**
      * @var array
      */
     protected $configure;
 
-    /**
-     * @var string
-     */
-    protected $name = '';
+
+    protected $hosts = [];
 
     /**
-     * @var string
+     * @var array
      */
-    protected $listen = '';
+    protected $listens = [];
+
+    protected $root;
+
+    protected $indexTypes = [];
 
     /**
      * Server constructor.
      *
-     * @param \Panlatent\SiteCli\Site\Site $site
-     * @param array                        $configure
+     * @param string $name
+     * @param string $path
+     * @param array  $params
+     * @param Site   $parent
      */
-    public function __construct(Site $site, $configure)
+    public function __construct($name, $path, $params = [], Site $parent = null)
     {
-        $this->site = $site;
-        $this->configure = $configure;
+        if (isset($params['server_name'])) {
+            $this->name = $params['server_name'];
+        }
+        if (isset($params['listen'])) {
+            $this->listens[] = $params['listen'];
+        }
 
-        if (isset($this->configure['server_name'])) {
-            $this->name = $this->configure['server_name'];
-        }
-        if (isset($this->configure['listen'])) {
-            $this->listen = $this->configure['listen'];
-        }
+        $this->parent = $parent;
+        parent::__construct($params);
+    }
+
+    public function count()
+    {
+        return 0;
     }
 
     /**
-     * @return \Panlatent\SiteCli\Site\Site
+     * @return Site
      */
     public function getSite()
     {
-        return $this->site;
+        return $this->parent;
     }
 
     /**
      * @return array
      */
-    public function getConfigure()
+    public function getParams()
     {
-        return $this->configure;
+        return $this->getArrayCopy();
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getName()
+    public function getListens()
     {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getListen()
-    {
-        return $this->listen;
+        return $this->listens;
     }
 }

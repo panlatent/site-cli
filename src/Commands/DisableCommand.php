@@ -44,11 +44,11 @@ class DisableCommand extends Command implements Reloadable
 
     protected function disableSite($groupName, $siteName)
     {
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
-        if (false === ($site = $group->getSite($siteName))) {
+        if (false === ($site = $group->filter()->site($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
         if ( ! $site->isEnable()) {
@@ -63,13 +63,13 @@ class DisableCommand extends Command implements Reloadable
 
     protected function disableGroup($groupName)
     {
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
         $hasDisable = false;
         $this->io->writeln("<comment>Notice: {$group->count()} site in $groupName</comment>");
-        foreach ($group->getSites() as $site) {
+        foreach ($group->filter()->sites() as $site) {
             if ( ! $site->isEnable()) {
                 $this->io->writeln("<comment>x $groupName/{$site->getName()} is disabled, skip!</comment>");
                 continue;

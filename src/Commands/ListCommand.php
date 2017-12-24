@@ -9,6 +9,7 @@
 
 namespace Panlatent\SiteCli\Commands;
 
+use Panlatent\SiteCli\Site\Site;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -116,19 +117,24 @@ class ListCommand extends Command
         }
     }
 
+    /**
+     * Print groups list.
+     *
+     * @throws \Exception
+     */
     protected function listGroups()
     {
-        $groups = $this->getManager()->getGroups();
-        if (empty($groups)) {
+        $groups = $this->getManager()->filter()->groups();
+        if ($groups->isEmpty()) {
             $this->io->writeln('(empty)');
             return;
         }
 
-        sort($groups);
+        $groups->ksort();
         if ($this->isLong) {
             $list = [];
             foreach ($groups as $group) {
-                $list[] = [$group->count(), $group->getEnableSiteCount(), $group->getName()];
+                $list[] = [$group->count(), $group->filter()->enableCount(), $group->getName()];
             }
             $this->io->table(['enabled', 'size', 'group'], $list);
         } else {
@@ -142,7 +148,7 @@ class ListCommand extends Command
 
     protected function listSites()
     {
-        $sites = $this->getManager()->getSites();
+        $sites = $this->getManager()->filter()->sites();
         if ($this->group) {
             $sites = array_filter($sites, function ($site) {
                 /** @var \Panlatent\SiteCli\Site\Site $site */
@@ -150,22 +156,21 @@ class ListCommand extends Command
             });
         }
         if ( ! $this->isAll) {
-            $sites = array_filter($sites, function ($site) {
+            $sites = $sites->filter(function ($site) {
                 /** @var \Panlatent\SiteCli\Site\Site $site */
-                return $site->isEnable();
+                return $site instanceof Site && $site->isEnable();
             });
         }
         if (empty($sites)) {
             $this->io->writeln('(empty)');
             return;
         }
-
-        sort($sites);
+        $sites->ksort();
         if ($this->isLong) {
             $list = [];
             foreach ($sites as $site) {
                 $status = $site->isEnable() ? 'o' : '-';
-                $name = $site->getGroup()->getName() . '/' .$site->getName();
+                $name = $site->getPrettyName();
                 $name = $site->isEnable() ? '<enable>' . $name .'</enable>' :  $name;
                 $count = $site->count();
                 $list[] = [
@@ -187,7 +192,7 @@ class ListCommand extends Command
 
     protected function listServers()
     {
-        $servers = $this->getManager()->getServers();
+        $servers = $this->getManager()->filter()->servers();
         if ($this->group && $this->site) {
             $servers = array_filter($servers, function ($server) {
                 /** @var \Panlatent\SiteCli\Site\Server $server */
@@ -206,7 +211,7 @@ class ListCommand extends Command
             return;
         }
 
-        sort($servers);
+        ksort($servers);
         if ($this->isLong) {
             $list = [];
             foreach ($servers as $server) {
@@ -217,7 +222,7 @@ class ListCommand extends Command
                     $status,
                     $server->getSite()->getGroup()->getName(),
                     $server->getSite()->getName(),
-                    $server->getListen(),
+                    implode(',', $server->getListens()),
                     $name,
                 ];
             }

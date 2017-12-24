@@ -16,22 +16,12 @@ use Symfony\Component\Finder\Finder;
  *
  * @package Panlatent\SiteCli\Site
  */
-class Manager
+class Manager extends Group
 {
     /**
      * @var string
      */
-    protected $available;
-
-    /**
-     * @var string
-     */
     protected $enabled;
-
-    /**
-     * @var \Panlatent\SiteCli\Site\Group[]
-     */
-    protected $groups = [];
 
     /**
      * Manager constructor.
@@ -47,73 +37,18 @@ class Manager
         } elseif ( ! is_dir($enabled)) {
             throw new NotFoundException('site-enabled directory does not exist');
         }
-
-        $this->available = $available . DIRECTORY_SEPARATOR;
-        $this->enabled = $enabled . DIRECTORY_SEPARATOR;
-
-        $finder = new Finder();
-        $finder->directories()->depth(0)->in($this->available); // Find group
-        foreach ($finder as $directory) {
-            $name = $directory->getFilename();
-            $this->groups[$name] = new Group($this, $name, $directory->getPathname());
-        }
-
-        $finder = new Finder();
-        $finder->files()->depth(0)->in($this->available); // Find unknown group
-        if ($finder->count()) {
-            $this->groups['@default'] = new Group($this, '@default', $this->available);
-        }
+        $this->enabled = $enabled;
+        parent::__construct(null, $available);
     }
 
-    /**
-     * @param string $name
-     * @return bool|\Panlatent\SiteCli\Site\Group
-     */
-    public function getGroup($name)
+    final function getName()
     {
-        foreach ($this->groups as $groupName => $group) {
-            if ($groupName == $name) {
-                return $group;
-            }
-        }
-
-        return false;
+        return '';
     }
 
-    /**
-     * @return \Panlatent\SiteCli\Site\Group[]
-     */
-    public function getGroups()
+    final function getPrettyName()
     {
-        return $this->groups;
-    }
-
-    /**
-     * @return \Panlatent\SiteCli\Site\Site[]
-     */
-    public function getSites()
-    {
-        $sites = [];
-        foreach ($this->groups as $group) {
-            $sites = array_merge($sites, $group->getSites());
-        }
-
-        return $sites;
-    }
-
-    /**
-     * @return \Panlatent\SiteCli\Site\Server[]
-     */
-    public function getServers()
-    {
-        $servers = [];
-        foreach ($this->groups as $group) {
-            foreach ($group->getSites() as $site) {
-                $servers = array_merge($servers, $site->getServers());
-            }
-        }
-
-        return $servers;
+        return '';
     }
 
     /**
@@ -121,7 +56,7 @@ class Manager
      */
     public function getAvailable()
     {
-        return $this->available;
+        return $this->path;
     }
 
     /**
@@ -130,6 +65,21 @@ class Manager
     public function getEnabled()
     {
         return $this->enabled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEnableSiteCount()
+    {
+        $count = 0;
+        foreach ($this->filter()->sites() as $site) {
+            if ($site->isEnable()) {
+                $count += 1;
+            }
+        }
+
+        return $count;
     }
 
     /**

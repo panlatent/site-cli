@@ -13,7 +13,6 @@ use Exception;
 use Panlatent\SiteCli\Configure;
 use Panlatent\SiteCli\Service\Reloadable;
 use Panlatent\SiteCli\Site\Manager;
-use Panlatent\SiteCli\Site\NotFoundException;
 use Panlatent\SiteCli\Support\Util;
 use Stecman\Component\Symfony\Console\BashCompletion\Completion\CompletionAwareInterface;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
@@ -84,7 +83,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     /**
      * @param \Symfony\Component\Console\Input\InputInterface   $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @throws \Panlatent\SiteCli\Site\NotFoundException
      */
     final protected function initialize(InputInterface $input, OutputInterface $output)
     {
@@ -98,31 +96,28 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
             ! is_callable([$this, 'register'])) {
             return;
         }
-
-        try {
-            $this->container->injectMethod($this, 'register');
-
-            if ($this->configure['validate']['lost-symbolic-link']) {
-                $this->checkLostSymbolicLink($output);
-            }
-        } catch (NotFoundException $e) {
-            if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
-                $this->io->writeln([
-                    '',
-                    "<error>{$e->getMessage()}</error>"
-                ]);
-                if ( ! $this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
-                    throw $e;
-                }
-
-                $this->createUserConfigure($output);
-            }
+        $this->container->injectMethod($this, 'register');
+        if ($this->configure['validate']['lost-symbolic-link']) {
+            $this->checkLostSymbolicLink($output);
         }
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @return int
+     * @throws Exception
+     */
     public function run(InputInterface $input, OutputInterface $output)
     {
+        if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
+            if ($this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
+                $this->createUserConfigure($output);
+            }
+        }
+
         $statusCode = parent::run($input, $output);
+
 
         if ($this->isReloadService($this, $input)) {
             if ($this->reloadService()) {
@@ -169,6 +164,11 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
         return [];
     }
 
+    /**
+     * @param bool $throwException
+     * @return bool|Manager
+     * @throws Exception
+     */
     protected function getManager($throwException = true)
     {
         if ($this->manager === null) {
@@ -190,11 +190,11 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     {
         $names = [];
         if ($manager = $this->getManager(false)) {
-            $groups = $manager->getGroups();
-            foreach ($groups as $group) {
+            foreach ($manager as $group) {
                 $names[] = $group->getName();
             }
         }
+
         return $names;
     }
 
@@ -203,25 +203,22 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
         $command = $context->getWordAtIndex(1);
         $sites = [];
         if ($manager = $this->getManager(false)) {
-            $groups = $manager->getGroups();
-            foreach ($groups as $group) {
-                $sites[] = $group->getName();
-                foreach ($group->getSites() as $site) {
-                    if ($command != 'disable' || $site->isEnable()) {
-                        $sites[] = $group->getName() . '/' . $site->getName();
-                    }
+            foreach ($manager->filter()->sites() as $site) {
+                if ($command != 'disable' || $site->isEnable()) {
+                    $sites[] = $site->getPrettyName();
                 }
             }
         }
+
         return $sites;
     }
 
     private function createUserConfigure($output)
     {
         $command = $this->getApplication()->find('config');
-        $arguments = array(
+        $arguments = [
             'command' => 'init',
-        );
+        ];
         $greetInput = new ArrayInput($arguments);
         $command->run($greetInput, $output);
     }
@@ -239,7 +236,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     }
 
     /**
-     * @param object $object
+     * @param object         $object
      * @param InputInterface $input
      * @return bool
      */

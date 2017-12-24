@@ -10,7 +10,6 @@
 namespace Panlatent\SiteCli\Commands;
 
 use Panlatent\SiteCli\Configure;
-use Panlatent\SiteCli\Exception;
 use Panlatent\SiteCli\Support\Util;
 use Panlatent\SiteCli\Support\Editor;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -81,10 +80,6 @@ class InitCommand extends Command
         try {
             new Configure($filename);
         } catch (ParseException $e) {
-            $this->io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
-            unlink($filename);
-            return false;
-        } catch (Exception $e) {
             $this->io->writeln("<error>Create .site.yml file failed. {$e->getMessage()}</error>");
             unlink($filename);
             return false;

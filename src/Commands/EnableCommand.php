@@ -52,11 +52,11 @@ class EnableCommand extends Command implements Reloadable
 
     protected function enableSite($groupName, $siteName, $isForce = false)
     {
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
-        if (false === ($site = $group->getSite($siteName))) {
+        if (false === ($site = $group->filter()->site($siteName))) {
             throw new NotFoundException("Not found site \"$siteName\" in $groupName group");
         }
         if ($site->isEnable() && ! $isForce) {
@@ -71,14 +71,14 @@ class EnableCommand extends Command implements Reloadable
 
     protected function enableGroup($groupName, $isForce = false)
     {
-        if (false === ($group = $this->getManager()->getGroup($groupName))) {
+        if (false === ($group = $this->getManager()->filter()->group($groupName))) {
             throw new NotFoundException("Not found site group \"$groupName\"");
         }
 
         $this->io->writeln("<comment>Notice: {$group->count()} sites in $groupName group</comment>");
 
         $hasEnable = false;
-        foreach ($group->getSites() as $site) {
+        foreach ($group->filter()->sites() as $site) {
             if ($site->isEnable() && ! $isForce) {
                 $this->io->writeln("<comment>x $groupName/{$site->getName()} is enabled, skip!</comment>");
                 continue;

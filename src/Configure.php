@@ -25,6 +25,7 @@ class Configure extends Config
      * Configure constructor.
      *
      * @param array|string $path
+     * @throws \Noodlehaus\Exception\EmptyDirectoryException
      */
     public function __construct($path)
     {
