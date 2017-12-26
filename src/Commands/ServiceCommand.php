@@ -68,7 +68,7 @@ class ServiceCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $params = $this->configure->get('service', ['root' => false]);
+        $params = $this->getConfigure()->get('service', ['root' => false]);
         $template = $input->getOption('template');
         if ($input->getOption('with-root')) {
             $params['root'] = true;
@@ -83,7 +83,7 @@ class ServiceCommand extends Command
             $params['user'] = $input->getOption('user');
         }
 
-        $service = new Control($this->configure->get("templates.$template"), $params);
+        $service = new Control($this->getConfigure()->get("templates.$template"), $params);
 
         if ($input->getOption('preview')) {
             $preview = $service->getShellCommand($input->getArgument('signal'));
@@ -100,8 +100,8 @@ class ServiceCommand extends Command
     protected function getArgumentValues($argumentName, CompletionContext $context)
     {
         if ($argumentName === 'signal') {
-            $templateName = $this->configure->get('nginx.template', 'default');
-            $template = $this->configure->get("templates.$templateName", []);
+            $templateName = $this->getConfigure()->get('nginx.template', 'default');
+            $template = $this->getConfigure()->get("templates.$templateName", []);
 
             return array_keys($template);
         }
@@ -112,7 +112,7 @@ class ServiceCommand extends Command
     protected function getOptionValues($optionName, CompletionContext $context)
     {
         if ($optionName == 'template') {
-            $templates = $this->configure->get("templates", []);
+            $templates = $this->getConfigure()->get("templates", []);
             return array_keys($templates);
         } elseif ($optionName == 'user') {
             $users = [];

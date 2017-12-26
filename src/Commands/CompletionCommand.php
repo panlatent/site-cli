@@ -21,11 +21,6 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
      */
     protected $application;
 
-    /**
-     * @var \Panlatent\Container\Container
-     */
-    protected $container;
-
     protected function configure()
     {
         parent::configure();
@@ -36,7 +31,6 @@ class CompletionCommand extends \Stecman\Component\Symfony\Console\BashCompletio
     {
         parent::initialize($input, $output);
         $this->application = $this->getApplication();
-        $this->container = $this->application->getContainer();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

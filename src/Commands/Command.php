@@ -37,24 +37,19 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     protected $application;
 
     /**
-     * @var \Panlatent\Container\Container
-     */
-    protected $container;
-
-    /**
-     * @var \Panlatent\SiteCli\Configure
-     */
-    protected $configure;
-
-    /**
      * @var SymfonyStyle
      */
     protected $io;
 
     /**
+     * @var \Panlatent\SiteCli\Configure
+     */
+    private $_configure;
+
+    /**
      * @var \Panlatent\SiteCli\Site\Manager
      */
-    private $manager;
+    private $_manager;
 
     /**
      * Command constructor.
@@ -67,9 +62,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     final protected function preInit()
     {
         $this->application = $this->getApplication();
-        $this->container = $this->application->getContainer();
-        $this->configure = $this->container[Configure::class];
-
         if ($this instanceof Reloadable) {
             $this->addOption(
                 'without-reload',
@@ -88,14 +80,14 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     {
         $this->preInit();
         $this->io->getFormatter()->setStyle('enable', new OutputFormatterStyle('white', null, ['bold']));
-        $this->container->setService(SymfonyStyle::class, $this->io);
+//        $this->container->setService(SymfonyStyle::class, $this->io);
 
         if ( ! method_exists($this, 'register') ||
             ! is_callable([$this, 'register'])) {
             return;
         }
-        $this->container->injectMethod($this, 'register');
-        if ($this->configure['validate']['lost-symbolic-link']) {
+//        $this->container->injectMethod($this, 'register');
+        if ($this->getConfigure()['validate']['lost-symbolic-link']) {
             $this->checkLostSymbolicLink($output);
         }
     }
@@ -109,7 +101,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     public function run(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
-        if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
+        if ( ! file_exists(Util::home() . '/.site-cli.yml') && ! $this instanceof InitCommand) {
             if ($this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
                 $this->createUserConfigure($output);
             }
@@ -127,6 +119,37 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
         }
 
         return $statusCode;
+    }
+
+    /**
+     * @return null|Manager
+     */
+    public function getManager()
+    {
+        if ($this->_manager === null) {
+            $configure = $this->getConfigure();
+            if (isset($configure['available']) && isset($configure['enabled']) && file_exists
+                ($configure['available']) && file_exists($configure['enabled'])) {
+                $this->_manager = new Manager($configure['available'], $configure['enabled']);
+            }
+        }
+
+        return $this->_manager;
+    }
+
+    /**
+     * @return Configure
+     */
+    public function getConfigure()
+    {
+        if ($this->_configure === null) {
+            $this->_configure = new Configure([
+                __DIR__ . '/../../site-cli.yml',
+                '?~/.site-cli.yml' // optional
+            ]);
+        }
+
+        return $this->_configure;
     }
 
     final public function completeArgumentValues($argumentName, CompletionContext $context)
@@ -163,32 +186,10 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
         return [];
     }
 
-    /**
-     * @param bool $throwException
-     * @return bool|Manager
-     * @throws Exception
-     */
-    protected function getManager($throwException = true)
-    {
-        if ($this->manager === null) {
-            try {
-                $this->manager = $this->container[Manager::class];
-            } catch (Exception $exception) {
-                if ($throwException) {
-                    throw $exception;
-                }
-
-                return false;
-            }
-        }
-
-        return $this->manager;
-    }
-
     protected function getArgumentGroup()
     {
         $names = [];
-        if ($manager = $this->getManager(false)) {
+        if ($manager = $this->getManager()) {
             foreach ($manager as $group) {
                 $names[] = $group->getName();
             }
@@ -201,7 +202,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     {
         $command = $context->getWordAtIndex(1);
         $sites = [];
-        if ($manager = $this->getManager(false)) {
+        if ($manager = $this->getManager()) {
             foreach ($manager->filter()->sites() as $site) {
                 if ($command != 'disable' || $site->isEnable()) {
                     $sites[] = $site->getPrettyName();
@@ -224,13 +225,15 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
 
     private function checkLostSymbolicLink(OutputInterface $output)
     {
-        $manager = $this->container[Manager::class];
-        if ($lostSymbolicLinkEnables = $manager->getLostSymbolicLinkEnables()) {
-            foreach ($lostSymbolicLinkEnables as $enable) {
-                $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
+        /** @var Manager $manager */
+        if ($manager = $this->getManager()) {
+            if ($lostSymbolicLinkEnables = $manager->getLostSymbolicLinkEnables()) {
+                foreach ($lostSymbolicLinkEnables as $enable) {
+                    $output->writeln(sprintf("<error>Warning: Symbolic link lost in \"%s\"</error>", $enable));
+                }
+                $output->writeln('<comment>Note:</comment> Run <info>disable</info> <comment>--clear-lost</comment> will remove them');
+                $output->writeln('');
             }
-            $output->writeln('<comment>Note:</comment> Run <info>disable</info> <comment>--clear-lost</comment> will remove them');
-            $output->writeln('');
         }
     }
 
@@ -242,7 +245,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     private function isReloadService($object, $input)
     {
         $can = $object instanceof Reloadable && ! $input->getOption('without-reload') &&
-            $this->configure->get('service.reload', false);
+            $this->getConfigure()->get('service.reload', false);
 
         return $can && $object->canReloadService();
     }

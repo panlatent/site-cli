@@ -26,24 +26,16 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * The console version.
      */
-    const VERSION = '1.2.0';
-
-    /**
-     * @var \Panlatent\Container\Container
-     */
-    protected $container;
+    const VERSION = '1.3.2';
 
     /**
      * Application constructor.
      *
      * Using DefaultCommand replace default list command.
-     *
-     * @param \Panlatent\Container\Container $container
      */
-    public function __construct($container)
+    public function __construct()
     {
         parent::__construct(static::NAME, static::VERSION);
-        $this->container = $container;
         $this->add(new DefaultCommand());
     }
 
@@ -61,13 +53,5 @@ class Application extends \Symfony\Component\Console\Application
         unset($all['list']);
 
         return $all;
-    }
-
-    /**
-     * @return \Panlatent\Container\Container
-     */
-    public function getContainer()
-    {
-        return $this->container;
     }
 }

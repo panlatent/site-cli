@@ -61,7 +61,7 @@ class InitCommand extends Command
             return true;
         }
 
-        $config = $this->configure->all();
+        $config = $this->getConfigure()->all();
         $filename = $input->getOption('output') ? $input->getOption('output') : Util::home() . '/.site-cli.yml';
 
         $location = $this->locate();
@@ -91,7 +91,7 @@ class InitCommand extends Command
     private function locate()
     {
         $probables = [];
-        foreach ($this->configure['service']['search'] as $path) {
+        foreach ($this->getConfigure()['service']['search'] as $path) {
             $path = Util::realPath($path);
             if (is_dir($path)) {
                 $probables[] = $path;

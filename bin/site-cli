@@ -15,7 +15,6 @@
  * This file is the application launcher.
  * ----------------------------------------------------------------------------
  */
-use Panlatent\Container\Container;
 use Panlatent\SiteCli\Commands\AlfredCommand;
 use Panlatent\SiteCli\Commands\ClearCommand;
 use Panlatent\SiteCli\Commands\CompletionCommand;
@@ -28,8 +27,6 @@ use Panlatent\SiteCli\Commands\InitCommand;
 use Panlatent\SiteCli\Commands\ListCommand;
 use Panlatent\SiteCli\Application;
 use Panlatent\SiteCli\Commands\EditCommand;
-use Panlatent\SiteCli\Configure;
-use Panlatent\SiteCli\Site\Manager;
 
 /* ----------------------------------------------------------------------------
  * Check PHP version and composer autoload file.
@@ -48,31 +45,12 @@ if (version_compare(PHP_VERSION, '5.5', '<')) {
 require(__DIR__ . '/../vendor/autoload.php');
 
 /* ----------------------------------------------------------------------------
- * Register container services.
- *
- * Load configure file.
- * ----------------------------------------------------------------------------
- */
-$container = new Container();
-$container->setService(Configure::class, function() {
-    return new Configure([
-        __DIR__ . '/../site-cli.yml',
-        '?~/.site-cli.yml' // optional
-    ]);
-});
-
-$container->setService(Manager::class, function() use($container) {
-    return new Manager($container[Configure::class]['available'],
-        $container[Configure::class]['enabled']);
-});
-
-/* ----------------------------------------------------------------------------
  * Build a symfony console application.
  *
  * The Application uses a custom command replace default command(list).
  * ----------------------------------------------------------------------------
  */
-$app = new Application($container);
+$app = new Application();
 
 /* ----------------------------------------------------------------------------
  * The Completion command is based on stecman/symfony-console-completion.

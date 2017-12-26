@@ -101,7 +101,7 @@ class CreateCommand extends Command
     {
         if ($argumentName == 'target') {
             $names = [];
-            if ($this->getManager(false)) {
+            if ($this->getManager()) {
                 $groups = $this->getManager()->filter()->groups();
                 foreach ($groups as $group) {
                     $names[] = $group->getName() . '/';
