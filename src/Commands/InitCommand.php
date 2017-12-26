@@ -91,7 +91,7 @@ class InitCommand extends Command
     private function locate()
     {
         $probables = [];
-        foreach ($this->configure['nginx']['search'] as $path) {
+        foreach ($this->configure['service']['search'] as $path) {
             $path = Util::realPath($path);
             if (is_dir($path)) {
                 $probables[] = $path;
