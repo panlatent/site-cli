@@ -87,8 +87,6 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     final protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->preInit();
-
-        $this->io = new SymfonyStyle($input, $output);
         $this->io->getFormatter()->setStyle('enable', new OutputFormatterStyle('white', null, ['bold']));
         $this->container->setService(SymfonyStyle::class, $this->io);
 
@@ -111,6 +109,7 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
     public function run(InputInterface $input, OutputInterface $output)
     {
         if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
+            $this->io = new SymfonyStyle($input, $output);
             if ($this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
                 $this->createUserConfigure($output);
             }
