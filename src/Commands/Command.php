@@ -108,8 +108,8 @@ abstract class Command extends \Symfony\Component\Console\Command\Command implem
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
+        $this->io = new SymfonyStyle($input, $output);
         if ( ! file_exists(Util::home() . '/.site-cli.yml')) {
-            $this->io = new SymfonyStyle($input, $output);
             if ($this->io->confirm('Create a .site-cli.yml file to your home?', true)) {
                 $this->createUserConfigure($output);
             }
