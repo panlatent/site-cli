@@ -35,8 +35,7 @@ class ServiceCommand extends Command
                 'template',
                 't',
                 InputOption::VALUE_OPTIONAL,
-                'Select a template to match different environments',
-                'default'
+                'Select a template to match different environments'
             )->addOption(
                 'program',
                 'p',
@@ -69,7 +68,12 @@ class ServiceCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $params = $this->getConfigure()->get('service', ['root' => false]);
-        $template = $input->getOption('template');
+        if ($input->getOption('template')) {
+            $template = $input->getOption('template');
+        } else {
+            $template = isset($params['template']) ? $params['template'] : 'default';
+        }
+
         if ($input->getOption('with-root')) {
             $params['root'] = true;
         } elseif ($input->getOption('without-root')) {
