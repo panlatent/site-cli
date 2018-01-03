@@ -33,7 +33,7 @@ class CreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $distFile = $this->getManager()->getAvailable() . $input->getArgument('target');
+        $distFile = rtrim($this->getManager()->getAvailable(), '/') . '/' . trim($input->getArgument('target'), '/');
         $sourceContent = '';
         if ($input->getOption('from')) {
             $this->io->writeln("<info>reading from {$input->getOption('from')}</info>");
