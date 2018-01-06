@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class CreateCommand extends Command
 {
@@ -86,15 +87,11 @@ class CreateCommand extends Command
 
     protected function saveFile($filename, $content, $force = false)
     {
-        if (file_exists($filename)) {
-            if (is_dir($filename)) {
-                throw new InvalidArgumentException('Target is a directory');
-            } elseif ( ! $force) {
-                throw new InvalidArgumentException('File already exists');
-            }
+        $fs = new Filesystem();
+        if ($fs->exists($filename) && ! $force) {
+            throw new InvalidArgumentException('File already exists');
         }
-
-        file_put_contents($filename, $content);
+        $fs->dumpFile($filename, $content);
     }
 
     protected function getArgumentValues($argumentName, CompletionContext $context)
