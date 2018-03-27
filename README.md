@@ -69,7 +69,7 @@ Add shell complete in `~/.zshrc` or `~/.bash_profile`: `source ~/.site-cli.sh`
 A example: 
 
 ```bash
-$ site init --dump-comletion -o ~/.site-cli.bash
+$ site init --dump-completion -o ~/.site-cli.bash
 $ echo "source .site-cli.bash" >> ~/.zshrc
 ```
 
